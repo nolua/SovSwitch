@@ -1,0 +1,37 @@
+"GhdMOQbsna4="
+"o1KMlYvopR/12kD+ps4pSA=="
+
+si verif ip(ftp)
+	si copie ftp fichier
+		pour tout les switchs
+			si verif ip(switch)
+				si ping switch
+					si sauv switch
+						log ok sauv switch 
+					sinon
+						log erreur sauv switch
+				sinon 
+					log erreur ping switch
+			sinon
+				log erreur bad ip
+		fin pour tout les switch
+	sinon 
+		log erreur copie fichier ftp
+sinon
+	log erreur bad ip ftp
+	
+@ipSwitchs => tableau de string (@ip)
+@ipFtp => string (@ip)
+
+fonction Log
+fonction VerifIp
+fonction CopyFtpFile
+fonction BackupSwitch
+sauvegarder avec la recuperation du nom du switch
+reorganiser le log
+verification existence fichier log temp
+mettre le username du switch dans le fichier config
+
+
+
+

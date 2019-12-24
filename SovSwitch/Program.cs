@@ -21,6 +21,8 @@ namespace SovSwitch
             //Cisco cisco = null;
             //Uri uri = null;
             //SendMail sendMail = null;
+            GetConf();
+
             if (args.Length != 0)
             {
                 if (args[0].Equals("/encrypt") && !args[1].Equals(""))
@@ -38,7 +40,7 @@ namespace SovSwitch
                 string SwitchName = "";
                 string SwitchIp = "";
                 
-                GetConf();
+                
 
                 // on efface le fichier de log temporaire si present
                 string tempFile = conf["PathFileLog"] + "\\" + conf["FileLogTemp"];

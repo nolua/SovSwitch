@@ -8,6 +8,13 @@ using System.IO;
 
 namespace SovSwitch
 {
+    /// <summary>
+    /// crednetiel utilisé pour la version de test :
+    ///  ftp : fx/cenexi
+    ///  switch:
+    ///  fujitsu/1formatic
+    ///  en:cenexi
+    /// </summary>
     class Cisco
     {
         private int port = 23;
@@ -31,7 +38,7 @@ namespace SovSwitch
 
             char[] trimChar = new char[] { '\0' };
             
-            var rxDatas = new[]{new {rData="Username",sData="monitor"},
+            var rxDatas = new[]{new {rData="Username",sData="fujitsu"},
                                 new {rData="Password",sData=Aes.DecryptString(conf["passwordSwitch"],sel)},
                                 new {rData=">",sData="en"},
                                 new {rData="Password",sData=Aes.DecryptString(conf["passwordEn"],sel)},
