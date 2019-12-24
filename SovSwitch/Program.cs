@@ -117,9 +117,7 @@ namespace SovSwitch
                 // envoi du mail de log
                 //SendMail sendMail = new SendMail(sectionListeMail, conf["PathFileLog"], conf["FileLogTemp"],conf["SmtpServeur"], conf["SenderFrom"]);
 
-                // tempo d'envoi du mail
-                //Thread.Sleep(300000);
-
+                
                 // copie du log temporaire dans le log final
                 LogToFile.AppendShortToFinalLog(conf["PathFileLog"], conf["fileLogTemp"],conf["FileLogFinal"]);
 
