@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <ApplicationIcon />
+    <Win32Resource />
+    <LangVersion>8.0</LangVersion>
+    <StartupObject />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="DataSwitchElement.cs" />
+    <Compile Remove="DataSwitchElementCollection.cs" />
+    <Compile Remove="ListeDataSwitchSection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CheckLibrary\CheckLibrary.csproj" />
+    <ProjectReference Include="..\ConfigLibrary\ConfigLibrary.csproj" />
+    <ProjectReference Include="..\CryptoLibrary\CryptoLibrary.csproj" />
+    <ProjectReference Include="..\LogLibrary\LogLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="App.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
