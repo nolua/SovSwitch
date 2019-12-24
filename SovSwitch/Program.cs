@@ -35,10 +35,18 @@ namespace SovSwitch
             }
             else
             {
-                string nameSwitch = "";
-                string adrSwitch = "";
-
+                string SwitchName = "";
+                string SwitchIp = "";
+                
                 GetConf();
+
+                // on efface le fichier de log temporaire si present
+                string tempFile = conf["PathFileLog"] + "\\" + conf["FileLogTemp"];
+                if (File.Exists(@tempFile))
+                {
+                    File.Delete(@tempFile);
+                }
+
 
                 // on valide le serveur ftp
                 Uri uri = new Uri("ftp://" + conf["FtpAdresseIp"]);
@@ -56,24 +64,24 @@ namespace SovSwitch
                     foreach (Switch switchElement in sectionSwitch.Listes)
                     {
                         // on recupere le nom du switch et son adresse IP
-                        nameSwitch = switchElement.SwitchName;
-                        adrSwitch = switchElement.SwitchIp;
+                        SwitchName = switchElement.SwitchName;
+                        SwitchIp = switchElement.SwitchIp;
                         // validation de l'adresse du switch
-                        if (!Check.VerifAdresseIp(adrSwitch))
+                        if (!Check.VerifAdresseIp(SwitchIp))
                         {
                             // si on valide on sort
-                            exit(conf["PathFileLog"],conf["FileLogTemp"], 2, nameSwitch + "(" + adrSwitch + ")" + " : Erreur adresse Ip");
+                            exit(conf["PathFileLog"],conf["FileLogTemp"], 2, SwitchName + "(" + SwitchIp + ")" + " : Erreur adresse Ip");
                         }
                         // test ping switch
-                        else if (!Check.PingIp(adrSwitch))
+                        else if (!Check.PingIp(SwitchIp))
                         {
                             // si on valide on sort
-                            exit(conf["PathFileLog"], conf["FileLogTemp"], 3, "Switch " + nameSwitch + "(" + adrSwitch + ")" + " injoignable");
+                            exit(conf["PathFileLog"], conf["FileLogTemp"], 3, "Switch " + SwitchName + "(" + SwitchIp + ")" + " injoignable");
                         }
                         // données validées, on envoi toutes les info sur l'instance cisco
                         else
                         {
-                            //Cisco cisco = new Cisco(conf, nameSwitch, adrSwitch);
+                            //Cisco cisco = new Cisco(conf, SwitchIp, adrSwitch);
                         }
                     }
                     LogToFile.Log(conf["PathFileLog"], conf["FileLogTemp"],$"{new String('*', 10)} fin de la sauvegarde le {DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()} ");
