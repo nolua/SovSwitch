@@ -12,7 +12,9 @@ using System.Threading;
 namespace SovSwitch
 {
     class Program
-    {
+    { 
+        static NameValueCollection conf  = new NameValueCollection();
+
         static void Main(string[] args)
         {
 
@@ -35,47 +37,20 @@ namespace SovSwitch
             {
                 string nameSwitch = "";
                 string adrSwitch = "";
-                NameValueCollection conf = new NameValueCollection();
 
-                // recuperation du path du fichier log dans appSetting de l'adresse smtp et du sender 
-                conf["PathFileLog"] = ConfigurationManager.AppSettings["PathFileLog"];
-                conf["FileLogTemp"] = ConfigurationManager.AppSettings["FileLogTemp"];
-                conf["FileLogFinal"] = ConfigurationManager.AppSettings["FileLogFinal"];
-                conf["SmtpServeur"] = ConfigurationManager.AppSettings["SmtpServeur"];
-                conf["SenderFrom"] = ConfigurationManager.AppSettings["SenderFrom"];
-                
-                // affecte la section FtpSetting
-                Hashtable sectionFtpSetting = (Hashtable)ConfigurationManager.GetSection("FtpSetting");
+                GetConf();
 
-                // recupere l'adresse ip du serveur ftp
-                conf["FtpAdresseIp"] = (string)sectionFtpSetting["FtpAdresseIp"];
-                //Console.WriteLine("\tFtpIp => {0}", sectionFtpSetting["FtpAdresseIp"]);
                 // on valide le serveur ftp
                 Uri uri = new Uri("ftp://" + conf["FtpAdresseIp"]);
-
-                // affecte les credentials du serveur ftp
-                conf["FtpUser"] = (string)sectionFtpSetting["FtpUser"];
-                conf["FtpPassword"] = (string)sectionFtpSetting["FtpPassword"];
 
                 // validation du serveur ftp
                 if (Check.CheckFtpServeur(uri, conf["FtpUser"], conf["FtpPassword"]))
                 {
-                    // recupere le suffixe ftp
-                    conf["FtpSuffix"] = (string)sectionFtpSetting["FtpSuffix"];
-                    //Console.WriteLine("\tftp Suffix => {0}", sectionFtpSetting["FtpSuffix"]);
 
-                    // affecte la section des mot de passe des switchs
-                    Hashtable sectionPassword = (Hashtable)ConfigurationManager.GetSection("PasswordSwitch");
-
-                    // on affecte le passwordSwitch
-                    conf["PasswordSwitch"] = (string)sectionPassword["PasswordSwitch"];
-                    //Console.WriteLine("\tPasswordEn => {0}", sectionPassword["PasswordEn"]);
-
-                    // on affecte le password EN du switch
-                    conf["PasswordEn"] = (string)sectionPassword["PasswordEn"];
-
+                    
                     // affecte la section des switchs
                     ListeSwitchSection sectionSwitch = (ListeSwitchSection)ConfigurationManager.GetSection("ListeSwitchsSection");
+
                     // log du demarrage de la sauvegarde
                     LogToFile.Log(conf["PathFileLog"], conf["FileLogTemp"],$"{new String('*', 10)} debut de la sauvegarde le {DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()} ");
                     foreach (Switch switchElement in sectionSwitch.Listes)
@@ -108,9 +83,9 @@ namespace SovSwitch
                 {
                     exit(conf["PathFileLog"], conf["FileLogTemp"], 1, "Erreur serveur Ftp : " + conf["FtpAdresseIp"]);
                 }
-
-                
                 // recuperation des @ mails
+                
+
                 Hashtable sectionListeMail = (Hashtable)ConfigurationManager.GetSection("ListeMail");
 
 
@@ -131,6 +106,51 @@ namespace SovSwitch
             Console.WriteLine("\n press a key to exit");
             Console.ReadKey();
         }
+
+
+        // creation du dictionnaire des parmatres
+        private static void GetConf()
+        {
+            
+
+            // recuperation du path du fichier log dans appSetting de l'adresse smtp et du sender 
+            conf["PathFileLog"] = ConfigurationManager.AppSettings["PathFileLog"];
+            conf["FileLogTemp"] = ConfigurationManager.AppSettings["FileLogTemp"];
+            conf["FileLogFinal"] = ConfigurationManager.AppSettings["FileLogFinal"];
+            conf["SmtpServeur"] = ConfigurationManager.AppSettings["SmtpServeur"];
+            conf["SenderFrom"] = ConfigurationManager.AppSettings["SenderFrom"];
+
+            // affecte la section FtpSetting
+            Hashtable sectionFtpSetting = (Hashtable)ConfigurationManager.GetSection("FtpSetting");
+
+            // recupere l'adresse ip du serveur ftp
+            conf["FtpAdresseIp"] = (string)sectionFtpSetting["FtpAdresseIp"];
+            //Console.WriteLine("\tFtpIp => {0}", sectionFtpSetting["FtpAdresseIp"]);
+
+            
+
+            // affecte les credentials du serveur ftp
+            conf["FtpUser"] = (string)sectionFtpSetting["FtpUser"];
+            conf["FtpPassword"] = (string)sectionFtpSetting["FtpPassword"];
+
+            // recupere le suffixe ftp
+            conf["FtpSuffix"] = (string)sectionFtpSetting["FtpSuffix"];
+
+            // affecte la section des mot de passe des switchs
+            Hashtable sectionPassword = (Hashtable)ConfigurationManager.GetSection("PasswordSwitch");
+
+            // on affecte le passwordSwitch
+            conf["PasswordSwitch"] = (string)sectionPassword["PasswordSwitch"];
+            //Console.WriteLine("\tPasswordEn => {0}", sectionPassword["PasswordEn"]);
+
+            // on affecte le password EN du switch
+            conf["PasswordEn"] = (string)sectionPassword["PasswordEn"];
+
+            
+
+
+        }
+
         private static void exit(int v)
         {
             switch (v)
