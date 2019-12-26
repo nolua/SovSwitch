@@ -26,7 +26,7 @@ namespace CheckLibrary
         public static bool PingIp(string adresseIp)
         {
             bool result = false;
-            Int32 timeout = 5000;
+            Int32 timeout = 10000;
 
             Ping PingServeur = new Ping();
             try

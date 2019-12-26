@@ -49,7 +49,6 @@ namespace LogLibrary
 
         public static void AppendShortToFinalLog(string pathFileLog, string fileLogTemp,string fileLogFinal) 
         {
-            //using StreamReader srFileLog = File.OpenText(@pathFileLog);
             String line;
             string text="";
             string source = pathFileLog + "/" + fileLogTemp;
@@ -63,8 +62,6 @@ namespace LogLibrary
                 //Continue to read until you reach end of file
                 while (line != null)
                 {
-                    //write the lie to console window
-                    //Console.WriteLine(line);
                     text += line + "\r\n";
                     //Read the next line
                     line = sr.ReadLine();
@@ -74,18 +71,12 @@ namespace LogLibrary
                 //Console.ReadLine();
                 LogAppend(pathFileLog,fileLogFinal, text);
                 //Console.ReadLine();
-                File.Delete(source);
+                //File.Delete(source);
             }
             catch (Exception e)
             {
                 Console.WriteLine("Exception: " + e.Message);
             }
-            finally
-            {
-                Console.WriteLine("Executing finally block.");
-            }
-            //using StreamWriter streamWriter = File.AppendText(@pathFileLog);
         }
-
     }
 }

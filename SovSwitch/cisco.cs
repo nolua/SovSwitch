@@ -46,7 +46,7 @@ namespace SovSwitch
                                 new {rData="Password",sData=Aes.DecryptString(conf["passwordSwitch"],sel)},
                                 new {rData=">",sData="en"},
                                 new {rData="Password",sData=Aes.DecryptString(conf["passwordEn"],sel)},
-                                new {rData="#",sData="copy running-config ftp"},
+                                new {rData="#",sData="copy running-config ftp:"},
                                 new {rData="Address",sData=conf["FTpAdresseIp"]},
                                 new {rData="Destination",sData=conf["ftpSuffix"] + switchName + ".txt"},
                                 new {rData="copied",sData="exit"},
@@ -56,10 +56,11 @@ namespace SovSwitch
             {
                 client = new TcpClient(switchIp, port);
                 stream = client.GetStream();
-                stream.ReadTimeout = 10000;
+                //stream.ReadTimeout = 30000;
 
-
-                LogToFile.LogAppend(conf["pathFileLog"],conf["FileLogTemp"], "\t------ debut sauvegarde de " + switchName);
+                Console.WriteLine();
+                LogToFile.LogAppend(conf["pathFileLog"],conf["FileLogTemp"], "\t------ debut sauvegarde de " + switchName + "(" + switchIp + ")");
+                Console.WriteLine("\t------ debut sauvegarde de " + switchName + "(" + switchIp + ")");
                 foreach (var n in rxDatas)
                 {
                     try
@@ -70,31 +71,43 @@ namespace SovSwitch
                         foreach (string element in elements)
                             if (!element.Equals(""))
                             {
-                                LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], '\t' + element);
-                                Console.WriteLine('\t' + element);
+                                LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], "\t\t" + element);
+                                Console.WriteLine("\t\t" + element);
                             }
                         rep = "";
                         SendData(n.sData);
+                        //test plantage
                         
+                        if (i < 0)
+                        {
+                            //stream.Close();
+                            client.Close();
+                        }
+                        i++;
+
                     }
                     catch (Exception e)
                     {
-                        //Console.WriteLine("Exception: " + e.Message);
-                        LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], "ERREUR sur la sauvegarde de " + switchName);
-                        Console.WriteLine("ERREUR sur la sauvegarde de " + switchName);
+                        Console.WriteLine();
+                        Console.WriteLine("Exception: " + e.Message);
+                        LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], e.Message + '\n' + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
+                        Console.WriteLine("ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
                     }
                 }
-                i++;
+                //i++;
                 stream.Close();
                 client.Close();
 
-                Console.WriteLine(res);
-                LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], "\t------ fin sauvegarde de " + switchName);
+                //Console.WriteLine(res);
+                LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], "\t------ fin sauvegarde de " + switchName + "(" + switchIp + ")");
+                Console.WriteLine("\t------ fin sauvegarde de " + switchName + "(" + switchIp + ")");
                 LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"],"\n");
                 //LogToFile.Log("c:/temp/SovSwitch",switchName+".log",res);
             }
             catch (Exception e)
             {
+                Console.WriteLine();
+                Console.WriteLine("Exception: " + e.Message);
                 LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"],switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch");
                 Console.WriteLine(switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch");
             }

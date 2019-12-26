@@ -28,9 +28,9 @@ fonction VerifIp
 fonction CopyFtpFile
 fonction BackupSwitch
 sauvegarder avec la recuperation du nom du switch
-reorganiser le log
-verification existence fichier log temp
-mettre le username du switch dans le fichier config
+reorganiser le log - fait
+verification existence fichier log temp - fait
+mettre le username du switch dans le fichier config - fait
 
 
 
