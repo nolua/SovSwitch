@@ -5,24 +5,11 @@ namespace LogLibrary
 {
     public class LogToFile
     {
-        
-        public static void Log(string pathFileLog, string fileLogTemp,string logMessage)
-        {
-            string target = pathFileLog + "/" + fileLogTemp;
-            StreamWriter streamWriter = File.AppendText(@target);
-            using (streamWriter) { 
-            //w.Write("\r\nLog Entry : ");
-            //w.WriteLine($"{DateTime.Now.ToLongTimeString()} {DateTime.Now.ToLongDateString()}");
-            //w.WriteLine("  :");
-            streamWriter.WriteLine(logMessage);
-            //w.WriteLine("-------------------------------");
-            }
-            streamWriter.Close();
-        }
 
-        public static void LogAppend(string pathFileLog, string logMessage)
+        public static void Log(string pathFileLog, string fileLog, string logMessage)
         {
-            StreamWriter streamWriter = File.AppendText(@pathFileLog);
+            string target = pathFileLog + "/" + fileLog;
+            StreamWriter streamWriter = File.CreateText(@target);
             using (streamWriter)
             {
                 //w.Write("\r\nLog Entry : ");
@@ -34,14 +21,31 @@ namespace LogLibrary
             streamWriter.Close();
         }
 
-        public static void DumpLog(StreamReader r)
+        public static void LogAppend(string pathFileLog, string fileLog,string logMessage)
         {
-            string line;
-            while ((line = r.ReadLine()) != null)
+            string target = pathFileLog + "/" + fileLog;
+            StreamWriter streamWriter = File.AppendText(@target);
+            using (streamWriter)
             {
-                Console.WriteLine(line);
+                //w.Write("\r\nLog Entry : ");
+                //w.WriteLine($"{DateTime.Now.ToLongTimeString()} {DateTime.Now.ToLongDateString()}");
+                //w.WriteLine("  :");
+                streamWriter.WriteLine(logMessage);
+                //w.WriteLine("-------------------------------");
             }
+            streamWriter.Close();
         }
+
+        //public static void DumpLog(StreamReader r)
+        //{
+        //    string pathFileLog = "c:/temp/SovSswitch/cisco01.txt";
+        //    using (StreamReader r = File.OpenText(@pathFileLog))
+        //    string line;
+        //    while ((line = r.ReadLine()) != null)
+        //    {
+        //        Console.WriteLine(line);
+        //    }
+        //}
 
         public static void AppendShortToFinalLog(string pathFileLog, string fileLogTemp,string fileLogFinal) 
         {
@@ -68,7 +72,7 @@ namespace LogLibrary
                 //close the files
                 sr.Close();
                 //Console.ReadLine();
-                Log(pathFileLog,fileLogFinal, text);
+                LogAppend(pathFileLog,fileLogFinal, text);
                 //Console.ReadLine();
                 File.Delete(source);
             }

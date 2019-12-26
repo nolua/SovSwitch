@@ -26,10 +26,12 @@ namespace CheckLibrary
         public static bool PingIp(string adresseIp)
         {
             bool result = false;
+            Int32 timeout = 5000;
+
             Ping PingServeur = new Ping();
             try
             {
-                PingReply ReponseServeur = PingServeur.Send(adresseIp);
+                PingReply ReponseServeur = PingServeur.Send(adresseIp,timeout);
                 if (ReponseServeur.Status == IPStatus.Success)
                     result = true;
             }

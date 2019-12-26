@@ -62,7 +62,7 @@ namespace SovSwitch
                     ListeSwitchSection sectionSwitch = (ListeSwitchSection)ConfigurationManager.GetSection("ListeSwitchsSection");
 
                     // log du demarrage de la sauvegarde
-                    LogToFile.Log(conf["PathFileLog"], conf["FileLogTemp"],$"{new String('*', 10)} debut de la sauvegarde le {DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()} ");
+                    LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"],$"{new String('*', 10)} debut de la sauvegarde le {DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()} ");
                     foreach (Switch switchElement in sectionSwitch.Listes)
                     {
                         // on recupere le nom du switch et son adresse IP
@@ -83,11 +83,11 @@ namespace SovSwitch
                         // données validées, on envoi toutes les info sur l'instance cisco
                         else
                         {
-                            //Cisco cisco = new Cisco(conf, SwitchIp, adrSwitch);
+                            Cisco cisco = new Cisco(conf, SwitchName, SwitchIp);
                         }
                     }
-                    LogToFile.Log(conf["PathFileLog"], conf["FileLogTemp"],$"{new String('*', 10)} fin de la sauvegarde le {DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()} ");
-                    LogToFile.Log(conf["PathFileLog"], conf["FileLogTemp"], "\n\r");
+                    LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"],$"{new String('*', 10)} fin de la sauvegarde le {DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()} ");
+                    LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"], "\n\r");
                 }
                 else
                 {
@@ -100,7 +100,7 @@ namespace SovSwitch
 
 
                 // envoi du mail de log
-                //SendMail sendMail = new SendMail(sectionListeMail, conf["PathFileLog"], conf["FileLogTemp"],conf["SmtpServeur"], conf["SenderFrom"]);
+                SendMail sendMail = new SendMail(sectionListeMail, conf["PathFileLog"], conf["FileLogTemp"],conf["SmtpServeur"], conf["SenderFrom"]);
 
                 
                 // copie du log temporaire dans le log final
@@ -130,35 +130,18 @@ namespace SovSwitch
             conf["SmtpServeur"] = ConfigurationManager.AppSettings["SmtpServeur"];
             conf["SenderFrom"] = ConfigurationManager.AppSettings["SenderFrom"];
 
-            // affecte la section FtpSetting
+            // recupere le setting du serveur ftp
             Hashtable sectionFtpSetting = (Hashtable)ConfigurationManager.GetSection("FtpSetting");
-
-            // recupere l'adresse ip du serveur ftp
             conf["FtpAdresseIp"] = (string)sectionFtpSetting["FtpAdresseIp"];
-            //Console.WriteLine("\tFtpIp => {0}", sectionFtpSetting["FtpAdresseIp"]);
-
-            
-
-            // affecte les credentials du serveur ftp
             conf["FtpUser"] = (string)sectionFtpSetting["FtpUser"];
             conf["FtpPassword"] = (string)sectionFtpSetting["FtpPassword"];
-
-            // recupere le suffixe ftp
             conf["FtpSuffix"] = (string)sectionFtpSetting["FtpSuffix"];
 
             // affecte la section des mot de passe des switchs
             Hashtable sectionPassword = (Hashtable)ConfigurationManager.GetSection("PasswordSwitch");
-
-            // on affecte le passwordSwitch
+            conf["Username"] = (string)sectionPassword["Username"];
             conf["PasswordSwitch"] = (string)sectionPassword["PasswordSwitch"];
-            //Console.WriteLine("\tPasswordEn => {0}", sectionPassword["PasswordEn"]);
-
-            // on affecte le password EN du switch
             conf["PasswordEn"] = (string)sectionPassword["PasswordEn"];
-
-            
-
-
         }
 
         private static void exit(int v)
@@ -183,15 +166,15 @@ namespace SovSwitch
             {
                 case 1:
                     Console.WriteLine(msgLog);
-                    LogToFile.Log(pathFileLog,fileLogTemp,msgLog);
+                    LogToFile.LogAppend(pathFileLog,fileLogTemp,msgLog);
                     break;
                 case 2:
                     Console.WriteLine(msgLog);
-                    LogToFile.Log(pathFileLog,fileLogTemp, msgLog);
+                    LogToFile.LogAppend(pathFileLog,fileLogTemp, msgLog);
                     break;
                 case 3:
                     Console.WriteLine(msgLog);
-                    LogToFile.Log(pathFileLog,fileLogTemp, msgLog);
+                    LogToFile.LogAppend(pathFileLog,fileLogTemp, msgLog);
                     break;
                 default:
                     Console.WriteLine("Default case");

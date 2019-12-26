@@ -5,6 +5,7 @@ using CryptoLibrary;
 using System.Collections.Specialized;
 using LogLibrary;
 using System.IO;
+using System.Collections.Generic;
 
 namespace SovSwitch
 {
@@ -35,10 +36,13 @@ namespace SovSwitch
             string rep = "";
             switchName = (string)arg[1];
             switchIp = (string)arg[2];
+            double i = 0;
+            String pattern = @"\r\n";
+
 
             char[] trimChar = new char[] { '\0' };
             
-            var rxDatas = new[]{new {rData="Username",sData="fujitsu"},
+            var rxDatas = new[]{new {rData="Username",sData=conf["Username"]},
                                 new {rData="Password",sData=Aes.DecryptString(conf["passwordSwitch"],sel)},
                                 new {rData=">",sData="en"},
                                 new {rData="Password",sData=Aes.DecryptString(conf["passwordEn"],sel)},
@@ -48,7 +52,6 @@ namespace SovSwitch
                                 new {rData="copied",sData="exit"},
                                 };
 
-            double i = 0;
             try
             {
                 client = new TcpClient(switchIp, port);
@@ -56,30 +59,43 @@ namespace SovSwitch
                 stream.ReadTimeout = 10000;
 
 
-                LogToFile.Log(conf["pathFileLog"],conf["FileLogTemp"], "------ debut sauvegarde de " + switchName);
+                LogToFile.LogAppend(conf["pathFileLog"],conf["FileLogTemp"], "\t------ debut sauvegarde de " + switchName);
                 foreach (var n in rxDatas)
                 {
                     try
                     {
                         WaitForData(n.rData, ref rep);
-                        res += rep.Trim('\0');
+                        String[] elements = System.Text.RegularExpressions.Regex.Split(rep, pattern);
+                        elements = System.Text.RegularExpressions.Regex.Split(rep,pattern);
+                        foreach (string element in elements)
+                            if (!element.Equals(""))
+                            {
+                                LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], '\t' + element);
+                                Console.WriteLine('\t' + element);
+                            }
                         rep = "";
                         SendData(n.sData);
+                        
                     }
-                    catch
+                    catch (Exception e)
                     {
-                        LogToFile.Log(conf["pathFileLog"], conf["FileLogTemp"], "ERREUR sur la sauvegarde de " + switchName);
+                        //Console.WriteLine("Exception: " + e.Message);
+                        LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], "ERREUR sur la sauvegarde de " + switchName);
                         Console.WriteLine("ERREUR sur la sauvegarde de " + switchName);
                     }
                 }
                 i++;
                 stream.Close();
-                LogToFile.Log(conf["pathFileLog"], conf["FileLogTemp"], "------ fin sauvegarde de " + switchName);
-                LogToFile.Log(conf["pathFileLog"], conf["FileLogTemp"],"\r\n");
+                client.Close();
+
+                Console.WriteLine(res);
+                LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], "\t------ fin sauvegarde de " + switchName);
+                LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"],"\n");
+                //LogToFile.Log("c:/temp/SovSwitch",switchName+".log",res);
             }
-            catch
+            catch (Exception e)
             {
-                LogToFile.Log(conf["pathFileLog"], conf["FileLogTemp"],switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch");
+                LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"],switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch");
                 Console.WriteLine(switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch");
             }
         }
@@ -102,13 +118,6 @@ namespace SovSwitch
                 page = System.Text.Encoding.ASCII.GetString(bytesReceived, 0, nbBytes);
                 comp++;
             }
-            //Console.WriteLine(comp);
-            //Console.WriteLine(page);
-            string strTemp = page.Trim(new Char[] { '\r','\n','\t' });
-            LogToFile.Log(conf["pathFileLog"], conf["FileLogTemp"], "\t" + strTemp);
-            Console.WriteLine("\t" + strTemp);
-            //Console.WriteLine("-");
-            //Console.WriteLine("\n");
         }
 
         public bool FindString(string searchWithinThis, string searchForThis)
