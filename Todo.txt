@@ -32,7 +32,35 @@ reorganiser le log - fait
 verification existence fichier log temp - fait
 mettre le username du switch dans le fichier config - fait
 passer en arguement le sel dans check.cs
+gestion de la taille des log
+créé les repertoires de prog et de log
 
+verif ligne de commande
+	si oui => on execute la commande
+	sinon 
+	si logtemp
+		on efface logtemp
+	on créé un logtemp avec timestamp
+	verif pidfile => (bool)VerifyPidFile
+		si present on sort => log erreur
+		sinon on créé et on continu
 
-
+			verif ftp => (bool)bVerifFtp
+				si non valide on sort => log erreur
+				sinon verif mot de passe (bool)bVerifPassword
+				si non valide on sort => log erreur
+				sinon on continu
+				pour chaque switch
+					verif adresse (bool)verifAdressSwitch
+					si non valide on sort => log erreur
+					sinon on continu
+					verif ping (bool) VerifPingSwitch
+					si non valide on sort => log erreur
+					sinon on sauvegarde le switch => log sauvegarde
+				fin pour chaque switch
+	
+	envoimail logtemp  => log erreur
+	fin logtemp avec timestamp
+	copy logtemp => logfinal
+	efface pidfile
 

@@ -10,9 +10,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="cisco - Copier.cs" />
     <Compile Remove="DataSwitchElement.cs" />
     <Compile Remove="DataSwitchElementCollection.cs" />
     <Compile Remove="ListeDataSwitchSection.cs" />
+    <Compile Remove="Program - Copier.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="cisco - Copier.cs" />
+    <None Include="Program - Copier.cs" />
   </ItemGroup>
 
   <ItemGroup>
