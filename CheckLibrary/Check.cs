@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
+using ConfigLibrary;
 
 namespace CheckLibrary
 {
@@ -48,7 +49,7 @@ namespace CheckLibrary
                 // Get the object used to communicate with the server.
                 FtpWebRequest request = (FtpWebRequest)WebRequest.Create(serverUri);
                 request.Method = WebRequestMethods.Ftp.ListDirectory;
-                request.Credentials = new NetworkCredential(ftpUser, Aes.DecryptString(ftpPassword,"louna"));
+                request.Credentials = new NetworkCredential(ftpUser, Aes.DecryptString(ftpPassword,Sel.Val));
                 try
                 {
                     FtpWebResponse response = (FtpWebResponse)request.GetResponse();

@@ -8,7 +8,8 @@ namespace SovSwitch
 {
     class SendMail
     {
-        public SendMail(Hashtable listeMail, string pathFileLog,string fileLogTemp, string smtpServeur,string senderFrom)
+        
+        public SendMail(Hashtable listeMail, string pathFileLog,string fileLogTemp, string smtpServeur,string senderFrom,bool backupStatus)
         {
             MailMessage msg = new MailMessage();
             msg.From = new MailAddress(senderFrom);
@@ -18,8 +19,16 @@ namespace SovSwitch
             {
                 msg.To.Add(new MailAddress((string)dict.Value));
             }
-            msg.Subject = "Sauvegarde Cisco";
-            msg.Body = "test";
+            if (backupStatus)
+            {
+                msg.Subject = "Sauvegarde Cisco OK";
+                msg.Body = "Sauvegarde Cisco OK";
+            }
+            else
+            {
+                msg.Subject = "Sauvegarde Cisco en erreur";
+                msg.Body = "Une erreur est survenue pendant la sauvegarde";
+            }
 
             // Creat SMTP.
             //using (SmtpClient client = new SmtpClient())
@@ -31,7 +40,7 @@ namespace SovSwitch
             using (SmtpClient smtp = new SmtpClient(smtpServeur))
             {
                 smtp.Send(msg);
-             }
+            }
             attachment.Dispose();
         }
     }

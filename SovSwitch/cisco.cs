@@ -22,11 +22,14 @@ namespace SovSwitch
         TcpClient client;
         NetworkStream stream;
 
-        private string sel = "louna";
+        //private string sel = "louna";
         private string switchName;
         private string switchIp;
         private NameValueCollection conf = new NameValueCollection();
-        
+        private bool backupState=true;
+
+        public bool BackupState { get => backupState; set => backupState = value; }
+
         public Cisco() { }
 
         public Cisco(params Object[] arg)
@@ -36,11 +39,10 @@ namespace SovSwitch
             
             switchName = (string)arg[1];
             switchIp = (string)arg[2];
-            sel = (string)arg[3];
-            double i = 0;
-            String pattern = @"\r\n";
+            string sel = (string)arg[3];
+            string pattern = @"\r\n";
             string rep = "";
-
+            int i = 0; // pour test plantage com tcp
 
             char[] trimChar = new char[] { '\0' };
             
@@ -58,7 +60,7 @@ namespace SovSwitch
             {
                 client = new TcpClient(switchIp, port);
                 stream = client.GetStream();
-                //stream.ReadTimeout = 30000;
+                stream.ReadTimeout = 30000;
 
                 Console.WriteLine();
                 LogToFile.LogAppend(conf["pathFileLog"],conf["FileLogTemp"], "\t------ debut sauvegarde de " + switchName + "(" + switchIp + ")");
@@ -78,18 +80,20 @@ namespace SovSwitch
                             }
                         rep = "";
                         SendData(n.sData);
-                        //test plantage
-                        
+
+                        //test plantage com tcp
                         if (i < 0)
                         {
-                            //stream.Close();
+                            stream.Close();
                             client.Close();
                         }
                         i++;
-
+                        // fin test plantage com tcp
                     }
                     catch (Exception e)
                     {
+                        // on positionne l'etat du backup à false
+                        backupState = false;
                         Console.WriteLine();
                         Console.WriteLine("Exception: " + e.Message);
                         LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], e.Message + '\n' + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
@@ -108,6 +112,8 @@ namespace SovSwitch
             }
             catch (Exception e)
             {
+                // on positionne l'etat du backup à false
+                backupState = false;
                 Console.WriteLine();
                 Console.WriteLine("Exception: " + e.Message);
                 LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"],switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch\n");

@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ConfigLibrary\ConfigLibrary.csproj" />
     <ProjectReference Include="..\CryptoLibrary\CryptoLibrary.csproj" />
   </ItemGroup>
 

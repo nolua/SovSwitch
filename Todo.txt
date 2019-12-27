@@ -57,6 +57,8 @@ verif ligne de commande
 					verif ping (bool) VerifPingSwitch
 					si non valide on sort => log erreur
 					sinon on sauvegarde le switch => log sauvegarde
+						si erreur => log erreur
+						sinon => log sauvegarde
 				fin pour chaque switch
 	
 	envoimail logtemp  => log erreur
