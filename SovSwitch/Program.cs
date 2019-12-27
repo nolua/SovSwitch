@@ -19,6 +19,7 @@ namespace SovSwitch
         {
             GetConf();
             String pidFileName = conf["PathFileLog"]+ "/pidfile";
+            string sel = "louna";
             
             if (args.Length != 0)
             {
@@ -34,18 +35,27 @@ namespace SovSwitch
             }
             else
             {
+                // on efface le fichier de log temporaire si present
+                string tempFile = conf["PathFileLog"] + "\\" + conf["FileLogTemp"];
+                if (File.Exists(@tempFile))
+                {
+                    File.Delete(@tempFile);
+                }
+
+                LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"], $"{new String('*', 10)} debut de la sauvegarde le " +
+                    $"{DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()} ");
+                
                 // si le fichier existe, on a une sauvegarde deja en cours ou il y a eu un 
                 // pb avec la precedente sauvegarde => on sort
                 if (File.Exists(@pidFileName))
                 {
-                    exit(conf["PathFileLog"], conf["FileLogFinal"], 5, $" Une sauvegarde est deja en cours, ou il y a une erreur : " +
+                    Exit(conf["PathFileLog"], conf["FileLogFinal"], 5, $" Une sauvegarde est deja en cours, ou il y a une erreur : " +
                         $"{DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()}");
                 }
                 // sinon on le crée et on rentre dans le programme
                 else
                 {
-                    
-
+        
                     using (StreamWriter pidFile = File.CreateText(pidFileName))
                     {
                         //sw.WriteLine("Hello");
@@ -59,11 +69,11 @@ namespace SovSwitch
                     string SwitchIp;
 
                     // on efface le fichier de log temporaire si present
-                    string tempFile = conf["PathFileLog"] + "\\" + conf["FileLogTemp"];
-                    if (File.Exists(@tempFile))
-                    {
-                        File.Delete(@tempFile);
-                    }
+                    //string tempFile = conf["PathFileLog"] + "\\" + conf["FileLogTemp"];
+                    //if (File.Exists(@tempFile))
+                    //{
+                    //    File.Delete(@tempFile);
+                    //}
 
                     // on valide le serveur ftp
                     Uri uri = new Uri("ftp://" + conf["FtpAdresseIp"]);
@@ -72,43 +82,54 @@ namespace SovSwitch
                     if (Check.CheckFtpServeur(uri, conf["FtpUser"], conf["FtpPassword"]))
                     {
 
-
-                        // affecte la section des switchs
-                        ListeSwitchSection sectionSwitch = (ListeSwitchSection)ConfigurationManager.GetSection("ListeSwitchsSection");
-
-                        // log du demarrage de la sauvegarde
-                        LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"], $"{new String('*', 10)} debut de la sauvegarde le {DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()} ");
-                        foreach (Switch switchElement in sectionSwitch.Listes)
+                        // validation des mots de passe passwordSwitch et passwordEn
+                        string passwordSwitch = Aes.DecryptString(conf["PasswordSwitch"], sel);
+                        string passwordEn= Aes.DecryptString(conf["PasswordEn"], sel);
+                        // si le retour de la fonction encrypt est une chaine vide, on sort
+                        if (passwordSwitch.Equals("") || passwordEn.Equals(""))
                         {
-                            // on recupere le nom du switch et son adresse IP
-                            SwitchName = switchElement.SwitchName;
-                            SwitchIp = switchElement.SwitchIp;
-                            // validation de l'adresse du switch
-                            if (!Check.VerifAdresseIp(SwitchIp))
-                            {
-                                // si on valide on sort
-                                exit(conf["PathFileLog"], conf["FileLogTemp"], 2, SwitchName + "(" + SwitchIp + ")" + " : Erreur adresse Ip");
-                            }
-                            // test ping switch ne repond pas
-                            else if (!Check.PingIp(SwitchIp))
-                            {
-                                // ping non  valide on sort
-                                exit(conf["PathFileLog"], conf["FileLogTemp"], 3, "Switch " + SwitchName + "(" + SwitchIp + ")" + " injoignable");
-                            }
-                            // données validées, on envoi toutes les info sur l'instance cisco
-                            else
-                            {
-                                Cisco cisco = new Cisco(conf, SwitchName, SwitchIp);
-                            }
+                            Exit(conf["pathFileLog"], conf["FileLogTemp"], 5, "\n ERREUR : mot de passe incorect");
                         }
-                        LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"], $"{new String('*', 10)} fin de la sauvegarde le {DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()} ");
-                        LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"], "\n\r");
-                        File.Delete(pidFileName);
+                        // sinon on continu
+                        else
+                        {
+                            // affecte la section des switchs
+                            ListeSwitchSection sectionSwitch = (ListeSwitchSection)ConfigurationManager.GetSection("ListeSwitchsSection");
+
+                            // log du demarrage de la sauvegarde
+                            //LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"], $"{new String('*', 10)} debut de la sauvegarde le {DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()} ");
+                            foreach (Switch switchElement in sectionSwitch.Listes)
+                            {
+                                // on recupere le nom du switch et son adresse IP
+                                SwitchName = switchElement.SwitchName;
+                                SwitchIp = switchElement.SwitchIp;
+                                // validation de l'adresse du switch
+                                if (!Check.VerifAdresseIp(SwitchIp))
+                                {
+                                    // si on valide on sort
+                                    Exit(conf["PathFileLog"], conf["FileLogTemp"], 2, SwitchName + "(" + SwitchIp + ")" + " : Erreur adresse Ip");
+                                }
+                                // test ping switch ne repond pas
+                                else if (!Check.PingIp(SwitchIp))
+                                {
+                                    // ping non  valide on sort
+                                    Exit(conf["PathFileLog"], conf["FileLogTemp"], 3, "Switch " + SwitchName + "(" + SwitchIp + ")" + " injoignable");
+                                }
+                                // données validées, on envoi toutes les info sur l'instance cisco
+                                else
+                                {
+                                    Cisco cisco = new Cisco(conf, SwitchName, SwitchIp, sel);
+                                }
+                            }
+                            //LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"], $"{new String('*', 10)} fin de la sauvegarde le {DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()} ");
+                            //LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"], "\n\r");
+                            File.Delete(pidFileName);
+                        }
                     }
                     // serveur ftp non valide, on sort
                     else
                     {
-                        exit(conf["PathFileLog"], conf["FileLogTemp"], 1, "Erreur serveur Ftp : " + conf["FtpAdresseIp"]);
+                        Exit(conf["PathFileLog"], conf["FileLogTemp"], 1, "Erreur serveur Ftp : " + conf["FtpAdresseIp"]);
                     }
 
                     // recuperation de la liste des @ mails
@@ -116,6 +137,10 @@ namespace SovSwitch
 
                     // envoi du mail de log
                     //SendMail sendMail = new SendMail(sectionListeMail, conf["PathFileLog"], conf["FileLogTemp"],conf["SmtpServeur"], conf["SenderFrom"]);
+
+                    LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"], $"{new String('*', 10)} " +
+                        $"fin de la sauvegarde le {DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()} ");
+                    LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"], "\n\r");
 
                     // copie du log temporaire dans le log final
                     LogToFile.AppendShortToFinalLog(conf["PathFileLog"], conf["fileLogTemp"], conf["FileLogFinal"]);
@@ -125,6 +150,7 @@ namespace SovSwitch
                     //{
                     //    LogToFile.DumpLog(r);
                     //}
+                    
                 }
             }
             Console.WriteLine("\n press a key to exit");
@@ -170,7 +196,7 @@ namespace SovSwitch
             }
         }
 
-        private static void exit(string pathFileLog,string fileLog,int v,string msgLog)
+        public static void Exit(string pathFileLog,string fileLog,int v,string msgLog)
         {
             //throw new NotImplementedException();
             
@@ -192,6 +218,11 @@ namespace SovSwitch
                     LogToFile.LogAppend(pathFileLog,fileLog, msgLog + (char)13);
                     break;
                 case 5://sauvegarde deja en cours
+                    Console.WriteLine();
+                    Console.WriteLine(msgLog);
+                    LogToFile.LogAppend(pathFileLog, fileLog, msgLog + (char)13);
+                    break;
+                case 6://erreur de mot de passe
                     Console.WriteLine();
                     Console.WriteLine(msgLog);
                     LogToFile.LogAppend(pathFileLog, fileLog, msgLog + (char)13);

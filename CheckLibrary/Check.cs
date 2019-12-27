@@ -1,5 +1,6 @@
 ﻿using CryptoLibrary;
 using System;
+using System.Collections.Specialized;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;

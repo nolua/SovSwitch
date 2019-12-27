@@ -31,6 +31,7 @@ sauvegarder avec la recuperation du nom du switch
 reorganiser le log - fait
 verification existence fichier log temp - fait
 mettre le username du switch dans le fichier config - fait
+passer en arguement le sel dans check.cs
 
 
 

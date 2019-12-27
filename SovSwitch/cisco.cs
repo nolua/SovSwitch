@@ -32,20 +32,22 @@ namespace SovSwitch
         public Cisco(params Object[] arg)
         {
             conf = (NameValueCollection)arg[0];
-            string res = "";
-            string rep = "";
+            //string res = "";
+            
             switchName = (string)arg[1];
             switchIp = (string)arg[2];
+            sel = (string)arg[3];
             double i = 0;
             String pattern = @"\r\n";
+            string rep = "";
 
 
             char[] trimChar = new char[] { '\0' };
             
             var rxDatas = new[]{new {rData="Username",sData=conf["Username"]},
-                                new {rData="Password",sData=Aes.DecryptString(conf["passwordSwitch"],sel)},
+                                new {rData="Password",sData=Aes.DecryptString(conf["PasswordSwitch"],sel)},
                                 new {rData=">",sData="en"},
-                                new {rData="Password",sData=Aes.DecryptString(conf["passwordEn"],sel)},
+                                new {rData="Password",sData=Aes.DecryptString(conf["PasswordEn"],sel)},
                                 new {rData="#",sData="copy running-config ftp:"},
                                 new {rData="Address",sData=conf["FTpAdresseIp"]},
                                 new {rData="Destination",sData=conf["ftpSuffix"] + switchName + ".txt"},
@@ -108,7 +110,7 @@ namespace SovSwitch
             {
                 Console.WriteLine();
                 Console.WriteLine("Exception: " + e.Message);
-                LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"],switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch");
+                LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"],switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch\n");
                 Console.WriteLine(switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch");
             }
         }
