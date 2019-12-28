@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.IO.Compression;
+using System.Text.RegularExpressions;
 
 namespace LogLibrary
 {
@@ -21,7 +23,7 @@ namespace LogLibrary
             streamWriter.Close();
         }
 
-        public static void LogAppend(string pathFileLog, string fileLog,string logMessage)
+        public static void LogAppend(string pathFileLog, string fileLog, string logMessage)
         {
             string target = pathFileLog + "/" + fileLog;
             StreamWriter streamWriter = File.AppendText(@target);
@@ -47,10 +49,10 @@ namespace LogLibrary
         //    }
         //}
 
-        public static void AppendShortToFinalLog(string pathFileLog, string fileLogTemp,string fileLogFinal) 
+        public static void AppendShortToFinalLog(string pathFileLog, string fileLogTemp, string fileLogFinal)
         {
             String line;
-            string text="";
+            string text = "";
             string source = pathFileLog + "/" + fileLogTemp;
             //string target = pathFileLog + "/" + fileLogFinal;
             try
@@ -69,7 +71,7 @@ namespace LogLibrary
                 //close the files
                 sr.Close();
                 //Console.ReadLine();
-                LogAppend(pathFileLog,fileLogFinal, text);
+                LogAppend(pathFileLog, fileLogFinal, text);
                 //Console.ReadLine();
                 //File.Delete(source);
             }
@@ -77,6 +79,29 @@ namespace LogLibrary
             {
                 Console.WriteLine("Exception: " + e.Message);
             }
+        }
+
+        public static void ArchiveLog(string pathFileLog, string fileLogFinal)
+        {
+            string date = DateTime.Now.ToString("ddMMyyyy");
+            string heure = DateTime.Now.ToString("HHmmss");
+            // on extrait l'extension .log
+            string[] elements = Regex.Split(fileLogFinal, ".log");
+            // on merge le pathFileLog avec le fichier fileLogFinal
+            string pathFileToZip = pathFileLog + '/' + fileLogFinal;
+            // on créé le zipfile avec le nom du fichier log, la date et l'heure
+            string zipFile = elements[0] + '_' + date + '-' + heure + ".zip";
+            // on merge le pathFileLog avec le zipFile
+            string pathFileZip = pathFileLog + '/' + zipFile;
+
+
+            using (FileStream fs = new FileStream(@pathFileZip, FileMode.Create))
+            using (ZipArchive arch = new ZipArchive(fs, ZipArchiveMode.Create))
+            {
+                arch.CreateEntryFromFile(@pathFileToZip, fileLogFinal);
+                File.Delete(@pathFileToZip);
+            }
+
         }
     }
 }

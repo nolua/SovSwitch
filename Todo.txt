@@ -43,8 +43,10 @@ verif ligne de commande
 	on créé un logtemp avec timestamp
 	verif pidfile => (bool)VerifyPidFile
 		si present on sort => log erreur
-		sinon on créé et on continu
-
+		sinon on créé le fichier et on continu
+			verif taille log final
+			si plus grand que valeur
+				on copie le fichier en le zippant
 			verif ftp => (bool)bVerifFtp
 				si non valide on sort => log erreur
 				sinon verif mot de passe (bool)bVerifPassword

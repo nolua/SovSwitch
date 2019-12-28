@@ -10,20 +10,23 @@ using ConfigLibrary;
 
 namespace SovSwitch
 {
+    /// <summary>
+    /// crednetiel utilisé pour la version de test :
+    ///  ftp : sovswitch/cenexi
+    ///  switch:
+    ///  fujitsu/1formatic
+    ///  en:cenexi
+    /// </summary>
     class Program
     {
         static NameValueCollection conf = new NameValueCollection();
-        //static string sel;
-
-        //public static string Sel { get => sel; set => sel = value; }
-
+        
         static void Main(string[] args)
         {
             GetConf();
             String pidFileName = conf["PathFileLog"] + "/pidfile";
             bool backupStatus = true;
-            //sel = "louna";
-
+            
             if (args.Length != 0)
             {
                 if (args[0].Equals("/encrypt") && !args[1].Equals(""))
@@ -38,8 +41,20 @@ namespace SovSwitch
             }
             else
             {
+                string fileLogFinal = conf["PathFileLog"] + "/" + conf["FileLogFinal"];
+                
+                long lengthFile = new System.IO.FileInfo(@fileLogFinal).Length;
+                //FileAttributes fileAttributes = File.GetAttributes(@fileLogFinal);
+                long sizeLog = Convert.ToInt32(conf["SizeLog"]);
+                if (lengthFile >= sizeLog * 1024)
+                //if (fileAttributes.Le  .GetAttributes(conf)
+                    LogToFile.ArchiveLog(conf["PathFileLog"],conf["FileLogFinal"]);
+
+
+
                 // logtemp exist => delete and create
                 string tempFile = conf["PathFileLog"] + "/" + conf["FileLogTemp"];
+               
                 if (File.Exists(@tempFile))
                 {
                     File.Delete(@tempFile);
@@ -156,6 +171,7 @@ namespace SovSwitch
             conf["PathFileLog"] = ConfigurationManager.AppSettings["PathFileLog"];
             conf["FileLogTemp"] = ConfigurationManager.AppSettings["FileLogTemp"];
             conf["FileLogFinal"] = ConfigurationManager.AppSettings["FileLogFinal"];
+            conf["SizeLog"] = ConfigurationManager.AppSettings["SizeLog"];
             conf["SmtpServeur"] = ConfigurationManager.AppSettings["SmtpServeur"];
             conf["SenderFrom"] = ConfigurationManager.AppSettings["SenderFrom"];
 
