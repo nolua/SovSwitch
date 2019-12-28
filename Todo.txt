@@ -38,12 +38,12 @@ créé les repertoires de prog et de log
 verif ligne de commande
 	si oui => on execute la commande
 	sinon 
+	verif pidfile => (bool)VerifyPidFile
+		si present on sort => log erreur dans pidfile.log
+		sinon on créé le fichier et on continu
 	si logtemp
 		on efface logtemp
-	on créé un logtemp avec timestamp
-	verif pidfile => (bool)VerifyPidFile
-		si present on sort => log erreur
-		sinon on créé le fichier et on continu
+		on créé un logtemp avec timestamp
 			verif taille log final
 			si plus grand que valeur
 				on copie le fichier en le zippant

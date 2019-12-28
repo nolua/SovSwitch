@@ -83,12 +83,12 @@ namespace SovSwitch
                         // test plantage com tcp
                         // de 0 a 6 en fonction de l'etpae de connexion sur le switch
                         // 
-                        if (i ==2  && (switchName.Equals("CISCO02") || switchName.Equals("CISCO15") || switchName.Equals("CISCO32")))
-                        {
-                            stream.Close();
-                            client.Close();
-                        }
-                        i++;
+                        //if (i ==2  && (switchName.Equals("CISCO02") || switchName.Equals("CISCO15") || switchName.Equals("CISCO32")))
+                        //{
+                        //    stream.Close();
+                        //    client.Close();
+                        //}
+                        //i++;
                         // fin test plantage com tcp
                     }
                     catch (Exception ex)

@@ -20,13 +20,13 @@ namespace SovSwitch
     class Program
     {
         static NameValueCollection conf = new NameValueCollection();
-        
+
         static void Main(string[] args)
         {
             GetConf();
             String pidFileName = conf["PathFileLog"] + "/pidfile";
             bool backupStatus = true;
-            
+
             if (args.Length != 0)
             {
                 if (args[0].Equals("/encrypt") && !args[1].Equals(""))
@@ -36,44 +36,52 @@ namespace SovSwitch
                 }
                 else
                 {
-                    ExitCmd(4);
+                    ExitCmd(1);
                 }
             }
             else
             {
-                string fileLogFinal = conf["PathFileLog"] + "/" + conf["FileLogFinal"];
-                
-                long lengthFile = new System.IO.FileInfo(@fileLogFinal).Length;
-                //FileAttributes fileAttributes = File.GetAttributes(@fileLogFinal);
-                long sizeLog = Convert.ToInt32(conf["SizeLog"]);
-                if (lengthFile >= sizeLog * 1024)
-                //if (fileAttributes.Le  .GetAttributes(conf)
-                    LogToFile.ArchiveLog(conf["PathFileLog"],conf["FileLogFinal"]);
-
-
-
-                // logtemp exist => delete and create
-                string tempFile = conf["PathFileLog"] + "/" + conf["FileLogTemp"];
-               
-                if (File.Exists(@tempFile))
-                {
-                    File.Delete(@tempFile);
-                }
-                // start timestamp
-                LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"], $"{new String('+', 10)} debut de la sauvegarde le " +
-                    $"{DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()} ");
-
-                // pour test
-                File.Delete(pidFileName);
                 // pidFile exist => une sauvegarde est en cours ou il y a une erreur?
                 if (File.Exists(@pidFileName))
                 {
-                    Exit(conf["PathFileLog"], conf["FileLogTemp"], "Une sauvegarde est deja en cours, ou il y a une erreur");
-                    backupStatus = false;
+                    WriteLog(conf["PathFileLog"], conf["FileLogPidFile"], $"Une sauvegarde est deja en cours, ou il y a une erreur : " +
+                        $"{ DateTime.Now.ToLongDateString()} à { DateTime.Now.ToLongTimeString()}");
+                    //backupStatus = false;
                 }
-                // pidFile n'existe pas, on le créé et on continu
                 else
                 {
+                    // pidFile n'existe pas, on le créé et on continu
+                    string fileLogFinal = conf["PathFileLog"] + "/" + conf["FileLogFinal"];
+
+                    // test si le fichier fileLogFinal est inferieur a une taille max
+                    long lengthFile = new System.IO.FileInfo(@fileLogFinal).Length;
+                    long sizeLog = Convert.ToInt32(conf["SizeLog"]);
+                    if (lengthFile >= sizeLog * 1024)
+                        LogToFile.ArchiveLog(conf["PathFileLog"], conf["FileLogFinal"]);
+
+                    // logtemp exist => delete and create
+                    string fileLogTemp = conf["PathFileLog"] + "/" + conf["FileLogTemp"];
+                    if (File.Exists(@fileLogTemp))
+                    {
+                        File.Delete(@fileLogTemp);
+                    }
+
+                    // start timestamp
+                    LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"], $"{new String('+', 10)} debut de la sauvegarde le " +
+                        $"{DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()} ");
+
+                    // pour debug
+                    //File.Delete(pidFileName);
+
+                    // pidFile exist => une sauvegarde est en cours ou il y a une erreur?
+                    //if (File.Exists(@pidFileName))
+                    //{
+                    //    WriteLog(conf["PathFileLog"], conf["FileLogPidFile"], $"Une sauvegarde est deja en cours, ou il y a une erreur : " +
+                    //        $"{ DateTime.Now.ToLongDateString()} à { DateTime.Now.ToLongTimeString()}");
+                    //    //backupStatus = false;
+                    //}
+
+                    // pidFile n'existe pas, on le créé et on continu
                     using (StreamWriter pidFile = File.CreateText(pidFileName))
                     {
                         pidFile.Close();
@@ -88,7 +96,7 @@ namespace SovSwitch
                         // si le retour de la fonction encrypt est une chaine vide, on sort
                         if (passwordSwitch.Equals("") || passwordEn.Equals(""))
                         {
-                            Exit(conf["pathFileLog"], conf["FileLogTemp"],"ERREUR : mot de passe incorect");
+                            WriteLog(conf["pathFileLog"], conf["FileLogTemp"], "ERREUR : mot de passe incorect");
                             if (backupStatus)
                                 backupStatus = false;
                         }
@@ -109,7 +117,7 @@ namespace SovSwitch
                                 if (!Check.VerifAdresseIp(SwitchIp))
                                 {
                                     // si on valide on sort
-                                    Exit(conf["PathFileLog"], conf["FileLogTemp"], "Switch " + SwitchName + "(" + SwitchIp + ")" + " : Erreur adresse Ip");
+                                    WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Switch " + SwitchName + "(" + SwitchIp + ")" + " : Erreur adresse Ip");
                                     if (backupStatus)
                                         backupStatus = false;
                                 }
@@ -117,7 +125,7 @@ namespace SovSwitch
                                 else if (!Check.PingIp(SwitchIp))
                                 {
                                     // ping non  valide on sort
-                                    Exit(conf["PathFileLog"], conf["FileLogTemp"], "Switch " + SwitchName + "(" + SwitchIp + ")" + " : ne repond pas au ping");
+                                    WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Switch " + SwitchName + "(" + SwitchIp + ")" + " : ne repond pas au ping");
                                     if (backupStatus)
                                         backupStatus = false;
                                 }
@@ -125,7 +133,7 @@ namespace SovSwitch
                                 else
                                 {
                                     Cisco cisco = new Cisco(conf, SwitchName, SwitchIp, Sel.Val);
-                                    
+
                                     Console.WriteLine("etat du backup de sauvegarde du switch => " + cisco.BackupState);
                                     if (backupStatus)
                                         backupStatus = cisco.BackupState;
@@ -136,31 +144,35 @@ namespace SovSwitch
                     // serveur ftp non valide
                     else
                     {
-                        Exit(conf["PathFileLog"], conf["FileLogTemp"], "Erreur serveur Ftp : " + conf["FtpAdresseIp"]);
+                        WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Erreur serveur Ftp : " + conf["FtpAdresseIp"]);
                         if (backupStatus)
                             backupStatus = false;
                     }
+
+
+                    // recuperation de la liste des @ mails
+                    Hashtable sectionListeMail = (Hashtable)ConfigurationManager.GetSection("ListeMail");
+                    // envoi du mail de log
+                    //Console.WriteLine("Etat du backup general => " + backupStatus);
+                    SendMail sendMail = new SendMail(sectionListeMail, conf["PathFileLog"], conf["FileLogTemp"],conf["SmtpServeur"], conf["SenderFrom"],backupStatus);
+
+                    // enregistrement de l'etat du backup dans le log
+                    WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Etat du backup general => " + backupStatus);
+
+                    //stop timestamp
+                    LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"], $"{new String('+', 10)} " +
+                       $"fin de la sauvegarde le {DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()} ");
+                    //LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"], "\n\r");
+
+                    // copie du log temporaire dans le log final
+                    LogToFile.AppendShortToFinalLog(conf["PathFileLog"], conf["fileLogTemp"], conf["FileLogFinal"]);
+
+                    if (backupStatus)
+                        File.Delete(pidFileName);
                 }
-
-                // recuperation de la liste des @ mails
-                Hashtable sectionListeMail = (Hashtable)ConfigurationManager.GetSection("ListeMail");
-                // envoi du mail de log
-                Console.WriteLine("Etat du backup general => " + backupStatus);
-                //SendMail sendMail = new SendMail(sectionListeMail, conf["PathFileLog"], conf["FileLogTemp"],conf["SmtpServeur"], conf["SenderFrom"],backupStatus);
-
-                //stop timestamp
-                LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"], $"{new String('+', 10)} " +
-                   $"fin de la sauvegarde le {DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()} ");
-                //LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"], "\n\r");
-
-                // copie du log temporaire dans le log final
-                LogToFile.AppendShortToFinalLog(conf["PathFileLog"], conf["fileLogTemp"], conf["FileLogFinal"]);
-
-                if (backupStatus)
-                    File.Delete(pidFileName);
- }
-            Console.WriteLine("press a key to exit");
-            Console.ReadKey();
+            }
+            //Console.WriteLine("press a key to exit");
+            //Console.ReadKey();
         }
 
 
@@ -174,6 +186,7 @@ namespace SovSwitch
             conf["SizeLog"] = ConfigurationManager.AppSettings["SizeLog"];
             conf["SmtpServeur"] = ConfigurationManager.AppSettings["SmtpServeur"];
             conf["SenderFrom"] = ConfigurationManager.AppSettings["SenderFrom"];
+            conf["FileLogPidFile"] = "PidFile.log";
 
             // recupere le setting du serveur ftp
             Hashtable sectionFtpSetting = (Hashtable)ConfigurationManager.GetSection("FtpSetting");
@@ -203,7 +216,7 @@ namespace SovSwitch
             }
         }
 
-        public static void Exit(string pathFileLog, string fileLog, string msgLog)
+        public static void WriteLog(string pathFileLog, string fileLog, string msgLog)
         {
             Console.WriteLine();
             Console.WriteLine(msgLog);
