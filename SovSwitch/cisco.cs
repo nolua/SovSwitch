@@ -60,16 +60,21 @@ namespace SovSwitch
             {
                 client = new TcpClient(switchIp, port);
                 stream = client.GetStream();
-                stream.ReadTimeout = 30000;
+                stream.ReadTimeout = 10000;
+                stream.WriteTimeout = 10000;
 
                 Console.WriteLine();
-                LogToFile.LogAppend(conf["pathFileLog"],conf["FileLogTemp"], "\t------ debut sauvegarde de " + switchName + "(" + switchIp + ")");
+                // open log switch
+                LogToFile.LogAppend(conf["pathFileLog"],conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" + 
+                    " debut sauvegarde de " + switchName + "(" + switchIp + ")");
                 Console.WriteLine("\t------ debut sauvegarde de " + switchName + "(" + switchIp + ")");
                 foreach (var n in rxDatas)
                 {
                     try
                     {
+                       // Console.WriteLine("rx => {0}  tx => {1}", n.rData, rep);
                         WaitForData(n.rData, ref rep);
+                        //Console.WriteLine("rx => {0}  tx => {1}", n.rData, rep);
                         String[] elements = System.Text.RegularExpressions.Regex.Split(rep, pattern);
                         elements = System.Text.RegularExpressions.Regex.Split(rep,pattern);
                         foreach (string element in elements)
@@ -82,21 +87,23 @@ namespace SovSwitch
                         SendData(n.sData);
 
                         //test plantage com tcp
-                        if (i < 0)
-                        {
-                            stream.Close();
-                            client.Close();
-                        }
-                        i++;
+                        //if (i < 0)
+                        //{
+                        //    stream.Close();
+                        //    client.Close();
+                        //}
+                        //i++;
                         // fin test plantage com tcp
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
                         // on positionne l'etat du backup à false
                         backupState = false;
                         Console.WriteLine();
-                        Console.WriteLine("Exception: " + e.Message);
-                        LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], e.Message + '\n' + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
+                        //Console.WriteLine("Exception: " + e.Message);
+                        Console.WriteLine("Exception: " + ex);
+                        //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + '\n' + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
+                        LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + '\n' + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
                         Console.WriteLine("ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
                     }
                 }
@@ -104,10 +111,11 @@ namespace SovSwitch
                 stream.Close();
                 client.Close();
 
-                //Console.WriteLine(res);
-                LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], "\t------ fin sauvegarde de " + switchName + "(" + switchIp + ")");
+                // close log switch
+                LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" + 
+                    " fin sauvegarde de " + switchName + "(" + switchIp + ")\n");
+                //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], "\r\n");
                 Console.WriteLine("\t------ fin sauvegarde de " + switchName + "(" + switchIp + ")");
-                LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"],"\n");
                 //LogToFile.Log("c:/temp/SovSwitch",switchName+".log",res);
             }
             catch (Exception e)
@@ -133,11 +141,20 @@ namespace SovSwitch
             Byte[] bytesReceived = new Byte[512];
             int nbBytes;
 
-            while (!(FindString(page, findRxChaine)))
+            try
             {
-                nbBytes = stream.Read(bytesReceived, 0, bytesReceived.Length);
-                page = System.Text.Encoding.ASCII.GetString(bytesReceived, 0, nbBytes);
-                comp++;
+                while (!(FindString(page, findRxChaine)))
+                {
+                    nbBytes = stream.Read(bytesReceived, 0, bytesReceived.Length);
+                    page = System.Text.Encoding.ASCII.GetString(bytesReceived, 0, nbBytes);
+                    comp++;
+                    // pour debug
+                    Console.WriteLine("nbBtytes {0}   page={1}",nbBytes,page);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("erreur {0}   page={1}", ex, page);
             }
         }
 

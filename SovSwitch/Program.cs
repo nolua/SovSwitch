@@ -49,7 +49,7 @@ namespace SovSwitch
                     $"{DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()} ");
 
                 // pour test
-                //File.Delete(pidFileName);
+                File.Delete(pidFileName);
                 // pidFile exist => une sauvegarde est en cours ou il y a une erreur?
                 if (File.Exists(@pidFileName))
                 {
@@ -110,7 +110,8 @@ namespace SovSwitch
                                 else
                                 {
                                     Cisco cisco = new Cisco(conf, SwitchName, SwitchIp, Sel.Val);
-                                    Console.WriteLine("etat du backup" + cisco.BackupState);
+                                    
+                                    Console.WriteLine("etat du backup de sauvegarde du switch => " + cisco.BackupState);
                                     if (backupStatus)
                                         backupStatus = cisco.BackupState;
                                 }
@@ -129,7 +130,7 @@ namespace SovSwitch
                 // recuperation de la liste des @ mails
                 Hashtable sectionListeMail = (Hashtable)ConfigurationManager.GetSection("ListeMail");
                 // envoi du mail de log
-                Console.WriteLine("backupStatus => " + backupStatus);
+                Console.WriteLine("Etat du backup general => " + backupStatus);
                 //SendMail sendMail = new SendMail(sectionListeMail, conf["PathFileLog"], conf["FileLogTemp"],conf["SmtpServeur"], conf["SenderFrom"],backupStatus);
 
                 //stop timestamp
