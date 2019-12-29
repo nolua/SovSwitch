@@ -96,11 +96,12 @@ namespace SovSwitch
                         // on positionne l'etat du backup à false
                         backupState = false;
                         Console.WriteLine();
-                        //Console.WriteLine("Exception: " + e.Message);
-                        Console.WriteLine("Exception: " + ex);
+                        Console.WriteLine("Exception: " + ex.Message);
+                        Console.WriteLine("ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
+                        //Console.WriteLine("Exception: " + ex);
                         //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + '\n' + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
                         LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + '\n' + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
-                        Console.WriteLine("ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
+                        
                     }
                 }
                 //i++;
@@ -137,8 +138,8 @@ namespace SovSwitch
             Byte[] bytesReceived = new Byte[512];
             int nbBytes;
 
-            try
-            {
+            //try
+            //{
                 while (!(FindString(page, findRxChaine)))
                 {
                     nbBytes = stream.Read(bytesReceived, 0, bytesReceived.Length);
@@ -147,11 +148,11 @@ namespace SovSwitch
                     // pour debug
                     //Console.WriteLine("nbBtytes {0}   page={1}",nbBytes,page);
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("erreur {0}   page={1}", ex, page);
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine("erreur {0}   page={1}", ex, page);
+            //}
         }
 
         public bool FindString(string searchWithinThis, string searchForThis)

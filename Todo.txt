@@ -34,6 +34,8 @@ mettre le username du switch dans le fichier config - fait
 passer en arguement le sel dans check.cs
 gestion de la taille des log
 créé les repertoires de prog et de log
+gestion de l'erreur si mot de passe switch different + gestion de la remonté de l'etat du backup
+faire un saut de ligne dasn le log temporaire entre chaque sauvegarde de switch 
 
 verif ligne de commande
 	si oui => on execute la commande

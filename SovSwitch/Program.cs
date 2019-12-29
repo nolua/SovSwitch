@@ -157,7 +157,7 @@ namespace SovSwitch
                     Hashtable sectionListeMail = (Hashtable)ConfigurationManager.GetSection("ListeMail");
                     // envoi du mail de log
                     //Console.WriteLine("Etat du backup general => " + backupStatus);
-                    SendMail sendMail = new SendMail(sectionListeMail, conf["PathFileLog"], conf["FileLogTemp"],conf["SmtpServeur"], conf["SenderFrom"],backupStatus);
+                    //SendMail sendMail = new SendMail(sectionListeMail, conf["PathFileLog"], conf["FileLogTemp"],conf["SmtpServeur"], conf["SenderFrom"],backupStatus);
 
                     // enregistrement de l'etat du backup dans le log
                     WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Etat du backup general => " + backupStatus);
@@ -174,8 +174,9 @@ namespace SovSwitch
                         File.Delete(pidFileName);
                 }
             }
-            //Console.WriteLine("press a key to exit");
-            //Console.ReadKey();
+
+            Console.WriteLine("press a key to exit");
+            Console.ReadKey();
         }
 
 
