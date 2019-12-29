@@ -114,12 +114,12 @@ namespace SovSwitch
                 Console.WriteLine("\t------ fin sauvegarde de " + switchName + "(" + switchIp + ")");
                 //LogToFile.Log("c:/temp/SovSwitch",switchName+".log",res);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 // on positionne l'etat du backup à false
                 backupState = false;
                 Console.WriteLine();
-                Console.WriteLine("Exception: " + e.Message);
+                Console.WriteLine("Exception: " + ex.Message);
                 LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"],switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch\n");
                 Console.WriteLine(switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch");
             }
