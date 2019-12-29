@@ -52,7 +52,7 @@ namespace SovSwitch
                 {
                     // pidFile n'existe pas, on le créé et on continu
                     string fileLogFinal = conf["PathFileLog"] + "/" + conf["FileLogFinal"];
-
+                    
                     // test si le fichier fileLogFinal est inferieur a une taille max
                     long lengthFile = new System.IO.FileInfo(@fileLogFinal).Length;
                     long sizeLog = Convert.ToInt32(conf["SizeLog"]);
