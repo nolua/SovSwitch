@@ -52,12 +52,15 @@ namespace SovSwitch
                 {
                     // pidFile n'existe pas, on le créé et on continu
                     string fileLogFinal = conf["PathFileLog"] + "/" + conf["FileLogFinal"];
-                    
+
                     // test si le fichier fileLogFinal est inferieur a une taille max
-                    long lengthFile = new System.IO.FileInfo(@fileLogFinal).Length;
-                    long sizeLog = Convert.ToInt32(conf["SizeLog"]);
-                    if (lengthFile >= sizeLog * 1024)
-                        LogToFile.ArchiveLog(conf["PathFileLog"], conf["FileLogFinal"]);
+                    if (File.Exists(@fileLogFinal))
+                    {
+                        long lengthFile = new System.IO.FileInfo(@fileLogFinal).Length;
+                        long sizeLog = Convert.ToInt32(conf["SizeLog"]);
+                        if (lengthFile >= sizeLog * 1024)
+                            LogToFile.ArchiveLog(conf["PathFileLog"], conf["FileLogFinal"]);
+                    }
 
                     // logtemp exist => delete and create
                     string fileLogTemp = conf["PathFileLog"] + "/" + conf["FileLogTemp"];
@@ -207,7 +210,7 @@ namespace SovSwitch
             switch (v)
             {
                 case 1:
-                    Console.WriteLine("Argument de ligne de commande incorrect");
+                    Console.WriteLine("Argument de ligne de commande incorrect => SovSwitch /encrypt \"mot de passe\"");
                     break;
 
                 default:
