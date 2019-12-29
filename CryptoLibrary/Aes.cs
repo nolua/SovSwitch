@@ -55,7 +55,7 @@ namespace CryptoLibrary
                 cryptoStream.Close();
                 return Encoding.UTF8.GetString(plainTextBytes, 0, decryptedByteCount);
             }
-            catch (Exception e)
+            catch 
             {
                 //Console.WriteLine();
                 //Console.WriteLine("Exception: " + e.Message + "\n ERREUR sur un password");

@@ -18,11 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="cisco - Copier.cs" />
-    <None Include="Program - Copier.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\CheckLibrary\CheckLibrary.csproj" />
     <ProjectReference Include="..\ConfigLibrary\ConfigLibrary.csproj" />
     <ProjectReference Include="..\CryptoLibrary\CryptoLibrary.csproj" />

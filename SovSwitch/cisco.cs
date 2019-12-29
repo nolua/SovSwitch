@@ -36,7 +36,7 @@ namespace SovSwitch
             string sel = (string)arg[3];
             string pattern = @"\r\n";
             string rep = "";
-            int i = 0; // pour test plantage com tcp
+            //int i = 0; // pour test plantage com tcp
 
             char[] trimChar = new char[] { '\0' };
             
