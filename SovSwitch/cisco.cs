@@ -100,7 +100,7 @@ namespace SovSwitch
                         Console.WriteLine("ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
                         //Console.WriteLine("Exception: " + ex);
                         //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + '\n' + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
-                        LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + '\n' + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
+                        LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")\n");
                         
                     }
                 }
@@ -110,7 +110,7 @@ namespace SovSwitch
 
                 // close log switch
                 LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" + 
-                    " fin sauvegarde de " + switchName + "(" + switchIp + ")\n");
+                    " fin sauvegarde de " + switchName + "(" + switchIp + ")");
                 //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], "\r\n");
                 Console.WriteLine("\t------ fin sauvegarde de " + switchName + "(" + switchIp + ")");
                 //LogToFile.Log("c:/temp/SovSwitch",switchName+".log",res);

@@ -1,4 +1,7 @@
-﻿using System;
+﻿#define PROD
+//#undef PROD
+
+using System;
 using System.Configuration;
 using System.Collections;
 using System.Collections.Specialized;
@@ -136,8 +139,8 @@ namespace SovSwitch
                                 else
                                 {
                                     Cisco cisco = new Cisco(conf, SwitchName, SwitchIp, Sel.Val);
-
-                                    Console.WriteLine("etat du backup de sauvegarde du switch => " + cisco.BackupState);
+                                    //Console.WriteLine("etat du backup de sauvegarde du switch => " + cisco.BackupState);
+                                    WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "etat du backup de sauvegarde du switch => " + cisco.BackupState + "\n");
                                     if (backupStatus)
                                         backupStatus = cisco.BackupState;
                                 }
@@ -152,21 +155,22 @@ namespace SovSwitch
                             backupStatus = false;
                     }
 
-
-                    // recuperation de la liste des @ mails
-                    Hashtable sectionListeMail = (Hashtable)ConfigurationManager.GetSection("ListeMail");
-                    // envoi du mail de log
-                    //Console.WriteLine("Etat du backup general => " + backupStatus);
-                    //SendMail sendMail = new SendMail(sectionListeMail, conf["PathFileLog"], conf["FileLogTemp"],conf["SmtpServeur"], conf["SenderFrom"],backupStatus);
-
                     // enregistrement de l'etat du backup dans le log
                     WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Etat du backup general => " + backupStatus);
+                    //Console.WriteLine("Etat du backup general => " + backupStatus);
+
 
                     //stop timestamp
                     LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"], $"{new String('+', 10)} " +
                        $"fin de la sauvegarde le {DateTime.Now.ToLongDateString()} à {DateTime.Now.ToLongTimeString()} ");
                     //LogToFile.LogAppend(conf["PathFileLog"], conf["FileLogTemp"], "\n\r");
 
+                    // recuperation de la liste des @ mails
+                    Hashtable sectionListeMail = (Hashtable)ConfigurationManager.GetSection("ListeMail");
+                    // envoi du mail de log
+#if PROD
+                    SendMail sendMail = new SendMail(sectionListeMail, conf["PathFileLog"], conf["FileLogTemp"], conf["SmtpServeur"], conf["SenderFrom"], backupStatus);
+#endif 
                     // copie du log temporaire dans le log final
                     LogToFile.AppendShortToFinalLog(conf["PathFileLog"], conf["fileLogTemp"], conf["FileLogFinal"]);
 
@@ -174,9 +178,11 @@ namespace SovSwitch
                         File.Delete(pidFileName);
                 }
             }
-
+        
+#if !PROD
             Console.WriteLine("press a key to exit");
             Console.ReadKey();
+#endif
         }
 
 
@@ -222,9 +228,9 @@ namespace SovSwitch
 
         public static void WriteLog(string pathFileLog, string fileLog, string msgLog)
         {
-            Console.WriteLine();
+            //Console.WriteLine();
             Console.WriteLine(msgLog);
-            //LogToFile.LogAppend(pathFileLog, fileLog, msgLog + (char)13);
+            Console.WriteLine();
             LogToFile.LogAppend(pathFileLog, fileLog, msgLog);
         }
     }
