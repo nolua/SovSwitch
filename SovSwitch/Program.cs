@@ -1,4 +1,4 @@
-﻿#define PROD
+﻿//#define PROD
 //#undef PROD
 
 using System;
@@ -44,10 +44,17 @@ namespace SovSwitch
             }
             else
             {
-                // pidFile exist => une sauvegarde est en cours ou il y a une erreur?
+                // verfi existence du repertoire log
+                if (!Directory.Exists(conf["PathFileLog"]))
+                {
+                    Directory.CreateDirectory(conf["PathFileLog"]);
+                }
+
+                // pidFile exist => une sauvegarde est en cours ou il y a une erreur ?
+                // on log dans un fichier pidfile.log avec un timestamp
                 if (File.Exists(@pidFileName))
                 {
-                    WriteLog(conf["PathFileLog"], conf["FileLogPidFile"], $"Une sauvegarde est deja en cours, ou il y a une erreur : " +
+                    LogToFile.WriteLog(conf["PathFileLog"], conf["FileLogPidFile"], $"Une sauvegarde est deja en cours, ou il y a une erreur : " +
                         $"{ DateTime.Now.ToLongDateString()} à { DateTime.Now.ToLongTimeString()}");
                     //backupStatus = false;
                 }
@@ -102,7 +109,7 @@ namespace SovSwitch
                         // si le retour de la fonction encrypt est une chaine vide, on sort
                         if (passwordSwitch.Equals("") || passwordEn.Equals(""))
                         {
-                            WriteLog(conf["pathFileLog"], conf["FileLogTemp"], "ERREUR : mot de passe incorect");
+                            LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], "ERREUR : mot de passe incorect");
                             if (backupStatus)
                                 backupStatus = false;
                         }
@@ -123,7 +130,7 @@ namespace SovSwitch
                                 if (!Check.VerifAdresseIp(SwitchIp))
                                 {
                                     // si on valide on sort
-                                    WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Switch " + SwitchName + "(" + SwitchIp + ")" + " : Erreur adresse Ip");
+                                    LogToFile.WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Switch " + SwitchName + "(" + SwitchIp + ")" + " : Erreur adresse Ip");
                                     if (backupStatus)
                                         backupStatus = false;
                                 }
@@ -131,7 +138,7 @@ namespace SovSwitch
                                 else if (!Check.PingIp(SwitchIp))
                                 {
                                     // ping non  valide on sort
-                                    WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Switch " + SwitchName + "(" + SwitchIp + ")" + " : ne repond pas au ping");
+                                    LogToFile.WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Switch " + SwitchName + "(" + SwitchIp + ")" + " : ne repond pas au ping");
                                     if (backupStatus)
                                         backupStatus = false;
                                 }
@@ -140,7 +147,7 @@ namespace SovSwitch
                                 {
                                     Cisco cisco = new Cisco(conf, SwitchName, SwitchIp, Sel.Val);
                                     //Console.WriteLine("etat du backup de sauvegarde du switch => " + cisco.BackupState);
-                                    WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "etat du backup de sauvegarde du switch => " + cisco.BackupState + "\n");
+                                    LogToFile.WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "etat du backup de sauvegarde du switch => " + cisco.BackupState + "\n");
                                     if (backupStatus)
                                         backupStatus = cisco.BackupState;
                                 }
@@ -150,13 +157,13 @@ namespace SovSwitch
                     // serveur ftp non valide
                     else
                     {
-                        WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Erreur serveur Ftp : " + conf["FtpAdresseIp"]);
+                        LogToFile.WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Erreur serveur Ftp : " + conf["FtpAdresseIp"]);
                         if (backupStatus)
                             backupStatus = false;
                     }
 
                     // enregistrement de l'etat du backup dans le log
-                    WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Etat du backup general => " + backupStatus);
+                    LogToFile.WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Etat du backup general => " + backupStatus);
                     //Console.WriteLine("Etat du backup general => " + backupStatus);
 
 
@@ -217,7 +224,7 @@ namespace SovSwitch
             switch (v)
             {
                 case 1:
-                    Console.WriteLine("Argument de ligne de commande incorrect => SovSwitch /encrypt \"mot de passe\"");
+                    Console.WriteLine("Argument de ligne de commande incorrect => SovSwitch /encrypt mot de passe");
                     break;
 
                 default:
@@ -226,13 +233,13 @@ namespace SovSwitch
             }
         }
 
-        public static void WriteLog(string pathFileLog, string fileLog, string msgLog)
-        {
-            //Console.WriteLine();
-            Console.WriteLine(msgLog);
-            Console.WriteLine();
-            LogToFile.LogAppend(pathFileLog, fileLog, msgLog);
-        }
+        //public static void WriteLog(string pathFileLog, string fileLog, string msgLog)
+        //{
+        //    //Console.WriteLine();
+        //    Console.WriteLine(msgLog);
+        //    //Console.WriteLine();
+        //    LogToFile.LogAppend(pathFileLog, fileLog, msgLog);
+        //}
     }
 }
 

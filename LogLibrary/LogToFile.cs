@@ -14,11 +14,7 @@ namespace LogLibrary
             StreamWriter streamWriter = File.CreateText(@target);
             using (streamWriter)
             {
-                //w.Write("\r\nLog Entry : ");
-                //w.WriteLine($"{DateTime.Now.ToLongTimeString()} {DateTime.Now.ToLongDateString()}");
-                //w.WriteLine("  :");
                 streamWriter.WriteLine(logMessage);
-                //w.WriteLine("-------------------------------");
             }
             streamWriter.Close();
         }
@@ -29,11 +25,7 @@ namespace LogLibrary
             StreamWriter streamWriter = File.AppendText(@target);
             using (streamWriter)
             {
-                //w.Write("\r\nLog Entry : ");
-                //w.WriteLine($"{DateTime.Now.ToLongTimeString()} {DateTime.Now.ToLongDateString()}");
-                //w.WriteLine("  :");
-                streamWriter.WriteLine(logMessage);
-                //w.WriteLine("-------------------------------");
+               streamWriter.WriteLine(logMessage);
             }
             streamWriter.Close();
         }
@@ -101,7 +93,15 @@ namespace LogLibrary
                 arch.CreateEntryFromFile(@pathFileToZip, fileLogFinal);
                 File.Delete(@pathFileToZip);
             }
-
         }
+
+        public static void WriteLog(string pathFileLog, string fileLog, string msgLog)
+        {
+            //Console.WriteLine();
+            Console.WriteLine(msgLog);
+            //Console.WriteLine();
+            LogToFile.LogAppend(pathFileLog, fileLog, msgLog);
+        }
+
     }
 }

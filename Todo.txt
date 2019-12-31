@@ -27,14 +27,15 @@ fonction Log
 fonction VerifIp
 fonction CopyFtpFile
 fonction BackupSwitch
+
 sauvegarder avec la recuperation du nom du switch
 reorganiser le log - fait
 verification existence fichier log temp - fait
 mettre le username du switch dans le fichier config - fait
-passer en arguement le sel dans check.cs
-gestion de la taille des log
-créé les repertoires de prog et de log
-gestion de l'erreur si mot de passe switch different + gestion de la remonté de l'etat du backup
+passer en arguement le sel dans check.cs - fait
+gestion de la taille des log - fait
+créé les repertoires de log
+gestion de l'erreur si mot de passe switch different + gestion de la remonté de l'etat du backup - fait
 faire un saut de ligne dasn le log temporaire entre chaque sauvegarde de switch 
 
 verif ligne de commande
