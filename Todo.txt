@@ -1,6 +1,3 @@
-"GhdMOQbsna4="
-"o1KMlYvopR/12kD+ps4pSA=="
-
 si verif ip(ftp)
 	si copie ftp fichier
 		pour tout les switchs
@@ -70,4 +67,20 @@ verif ligne de commande
 	fin logtemp avec timestamp
 	copy logtemp => logfinal
 	efface pidfile
+
+
+	test :
+		ftp serveur bad
+			@ip
+			password
+			role serveur ftp
+		switch :
+			@ip switch bad
+			switch ne repond
+			perte com switch
+			password :
+				username
+				en
+		rep log absent
+		file logfinal present
 

@@ -130,7 +130,7 @@ namespace SovSwitch
                                 if (!Check.VerifAdresseIp(SwitchIp))
                                 {
                                     // si on valide on sort
-                                    LogToFile.WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Switch " + SwitchName + "(" + SwitchIp + ")" + " : Erreur adresse Ip");
+                                    LogToFile.WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Switch " + SwitchName + "(" + SwitchIp + ")" + " : Erreur adresse Ip\n");
                                     if (backupStatus)
                                         backupStatus = false;
                                 }
@@ -138,7 +138,7 @@ namespace SovSwitch
                                 else if (!Check.PingIp(SwitchIp))
                                 {
                                     // ping non  valide on sort
-                                    LogToFile.WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Switch " + SwitchName + "(" + SwitchIp + ")" + " : ne repond pas au ping");
+                                    LogToFile.WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Switch " + SwitchName + "(" + SwitchIp + ")" + " : ne repond pas au ping\n");
                                     if (backupStatus)
                                         backupStatus = false;
                                 }
@@ -175,7 +175,7 @@ namespace SovSwitch
                     // recuperation de la liste des @ mails
                     Hashtable sectionListeMail = (Hashtable)ConfigurationManager.GetSection("ListeMail");
                     // envoi du mail de log
-#if PROD
+#if !DEBUG
                     SendMail sendMail = new SendMail(sectionListeMail, conf["PathFileLog"], conf["FileLogTemp"], conf["SmtpServeur"], conf["SenderFrom"], backupStatus);
 #endif 
                     // copie du log temporaire dans le log final
@@ -186,7 +186,7 @@ namespace SovSwitch
                 }
             }
         
-#if !PROD
+#if DEBUG
             Console.WriteLine("press a key to exit");
             Console.ReadKey();
 #endif

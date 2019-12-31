@@ -59,14 +59,15 @@ namespace SovSwitch
 
                 Console.WriteLine();
                 // open log switch
-                LogToFile.LogAppend(conf["pathFileLog"],conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" + 
+                LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" +
                     " debut sauvegarde de " + switchName + "(" + switchIp + ")");
-                Console.WriteLine("\t------ debut sauvegarde de " + switchName + "(" + switchIp + ")");
+                //LogToFile.LogAppend(conf["pathFileLog"],conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" + 
+                //    " debut sauvegarde de " + switchName + "(" + switchIp + ")");
+                //Console.WriteLine("\t------ debut sauvegarde de " + switchName + "(" + switchIp + ")");
                 foreach (var n in rxDatas)
                 {
                     try
                     {
-                       // Console.WriteLine("rx => {0}  tx => {1}", n.rData, rep);
                         WaitForData(n.rData, ref rep);
                         //Console.WriteLine("rx => {0}  tx => {1}", n.rData, rep);
                         string[] elements = System.Text.RegularExpressions.Regex.Split(rep, pattern);
@@ -74,8 +75,9 @@ namespace SovSwitch
                         foreach (string element in elements)
                             if (!element.Equals(""))
                             {
-                                LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], "\t\t" + element);
-                                Console.WriteLine("\t\t" + element);
+                                LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"],$"{ new string(' ',21)+ element}");
+                                //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], "\t\t" + element);
+                                //Console.WriteLine("\t\t" + element);
                             }
                         rep = "";
                         SendData(n.sData);
@@ -95,13 +97,13 @@ namespace SovSwitch
                     {
                         // on positionne l'etat du backup à false
                         backupState = false;
-                        Console.WriteLine();
-                        Console.WriteLine("Exception: " + ex.Message);
-                        Console.WriteLine("ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
+                        //Console.WriteLine();
+                        //Console.WriteLine("Exception: " + ex.Message);
+                        //Console.WriteLine("ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
                         //Console.WriteLine("Exception: " + ex);
                         //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + '\n' + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
-                        LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")\n");
-                        
+                        //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")\n");
+                        LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")\n");
                     }
                 }
                 //i++;
@@ -109,20 +111,21 @@ namespace SovSwitch
                 client.Close();
 
                 // close log switch
-                LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" + 
+                LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" +
                     " fin sauvegarde de " + switchName + "(" + switchIp + ")");
-                //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], "\r\n");
-                Console.WriteLine("\t------ fin sauvegarde de " + switchName + "(" + switchIp + ")");
-                //LogToFile.Log("c:/temp/SovSwitch",switchName+".log",res);
+                //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" + 
+                //    " fin sauvegarde de " + switchName + "(" + switchIp + ")");
+                //Console.WriteLine("\t------ fin sauvegarde de " + switchName + "(" + switchIp + ")");
             }
             catch (Exception ex)
             {
                 // on positionne l'etat du backup à false
                 backupState = false;
-                Console.WriteLine();
-                Console.WriteLine("Exception: " + ex.Message);
-                LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"],switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch\n");
-                Console.WriteLine(switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch");
+                //Console.WriteLine();
+                //Console.WriteLine("Exception: " + ex.Message);
+                //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"],ex.Message + switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch\n");
+                //Console.WriteLine(switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch");
+                LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + "\n" +  switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch\n");
             }
         }
 
