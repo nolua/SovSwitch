@@ -15,7 +15,7 @@ namespace SovSwitch
 {
     /// <summary>
     /// crednetiel utilisé pour la version de test :
-    ///  ftp : sovswitch/cenexi
+    ///  ftp : sovswitch/cisco123
     ///  switch:
     ///  fujitsu/1formatic
     ///  en:cenexi
