@@ -14,7 +14,7 @@ using ConfigLibrary;
 namespace SovSwitch
 {
     /// <summary>
-    /// crednetiel utilisé pour la version de test :
+    /// credentiel utilisé pour la version de test :
     ///  ftp : sovswitch/cisco123
     ///  switch:
     ///  fujitsu/1formatic
@@ -124,40 +124,44 @@ namespace SovSwitch
                             foreach (Switch switchElement in sectionSwitch.Listes)
                             {
                                 // on recupere le nom du switch et son adresse IP
-                                string SwitchName = switchElement.SwitchName;
-                                string SwitchIp = switchElement.SwitchIp;
+                                string switchName = switchElement.SwitchName;
+                                string switchIp = switchElement.SwitchIp;
                                 // validation de l'adresse du switch
-                                if (!Check.VerifAdresseIp(SwitchIp))
+                                if (!Check.VerifAdresseIp(switchIp))
                                 {
                                     // si on valide on sort
-                                    LogToFile.WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Switch " + SwitchName + "(" + SwitchIp + ")" + " : Erreur adresse Ip\n");
+                                    LogToFile.WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Switch " + switchName + "(" + switchIp + ")" + " : Erreur adresse Ip \r\n");
                                     if (backupStatus)
                                         backupStatus = false;
                                 }
                                 // test ping switch ne repond pas
-                                else if (!Check.PingIp(SwitchIp))
+                                else if (!Check.PingIp(switchIp))
                                 {
                                     // ping non  valide on sort
-                                    LogToFile.WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Switch " + SwitchName + "(" + SwitchIp + ")" + " : ne repond pas au ping\n");
+                                    LogToFile.WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Switch " + switchName + "(" + switchIp + ")" + " : ne repond pas au ping \r\n");
                                     if (backupStatus)
                                         backupStatus = false;
                                 }
                                 // données validées, on envoi toutes les info sur l'instance cisco
                                 else
                                 {
-                                    Cisco cisco = new Cisco(conf, SwitchName, SwitchIp, Sel.Val);
+                                    LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" +
+                                        " debut sauvegarde de " + switchName + "(" + switchIp + ")");
+                                    Cisco cisco = new Cisco(conf, switchName, switchIp, Sel.Val);
+                                    LogToFile.WriteLog(conf["PathFileLog"], conf["FileLogTemp"], $"{new String(' ', 10)} etat du backup de sauvegarde du switch => " + cisco.BackupState);
+                                    LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" +
+                                            " fin sauvegarde de " + switchName + "(" + switchIp + ")\r\n");
+
                                     //Console.WriteLine("etat du backup de sauvegarde du switch => " + cisco.BackupState);
-                                    LogToFile.WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "etat du backup de sauvegarde du switch => " + cisco.BackupState + "\n");
                                     if (backupStatus)
-                                        backupStatus = cisco.BackupState;
-                                }
+                                        backupStatus = cisco.BackupState;                                }
                             }
                         }
                     }
                     // serveur ftp non valide
                     else
                     {
-                        LogToFile.WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Erreur serveur Ftp : " + conf["FtpAdresseIp"]);
+                        LogToFile.WriteLog(conf["PathFileLog"], conf["FileLogTemp"], "Erreur serveur Ftp : " + conf["FtpAdresseIp"] + (char)13);
                         if (backupStatus)
                             backupStatus = false;
                     }
@@ -175,13 +179,13 @@ namespace SovSwitch
                     // recuperation de la liste des @ mails
                     Hashtable sectionListeMail = (Hashtable)ConfigurationManager.GetSection("ListeMail");
                     // envoi du mail de log
-#if !DEBUG
+//#if !DEBUG
                     SendMail sendMail = new SendMail(sectionListeMail, conf["PathFileLog"], conf["FileLogTemp"], conf["SmtpServeur"], conf["SenderFrom"], backupStatus);
-#endif 
+//#endif 
                     // copie du log temporaire dans le log final
                     LogToFile.AppendShortToFinalLog(conf["PathFileLog"], conf["fileLogTemp"], conf["FileLogFinal"]);
 
-                    if (backupStatus)
+                    //if (backupStatus)
                         File.Delete(pidFileName);
                 }
             }

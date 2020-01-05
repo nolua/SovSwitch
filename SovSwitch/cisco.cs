@@ -36,7 +36,7 @@ namespace SovSwitch
             string sel = (string)arg[3];
             string pattern = @"\r\n";
             string rep = "";
-            //int i = 0; // pour test plantage com tcp
+            
 
             char[] trimChar = new char[] { '\0' };
             
@@ -59,11 +59,14 @@ namespace SovSwitch
 
                 Console.WriteLine();
                 // open log switch
-                LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" +
-                    " debut sauvegarde de " + switchName + "(" + switchIp + ")");
+                //LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" +
+                //    " debut sauvegarde de " + switchName + "(" + switchIp + ")");
                 //LogToFile.LogAppend(conf["pathFileLog"],conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" + 
                 //    " debut sauvegarde de " + switchName + "(" + switchIp + ")");
                 //Console.WriteLine("\t------ debut sauvegarde de " + switchName + "(" + switchIp + ")");
+
+                int i = 0; // pour test plantage com tcp
+
                 foreach (var n in rxDatas)
                 {
                     try
@@ -82,16 +85,15 @@ namespace SovSwitch
                         rep = "";
                         SendData(n.sData);
 
-                        // test plantage com tcp
+                        //test plantage com tcp
                         // de 0 a 6 en fonction de l'etpae de connexion sur le switch
-                        // 
-                        //if (i ==2  && (switchName.Equals("CISCO02") || switchName.Equals("CISCO15") || switchName.Equals("CISCO32")))
+                        //if (i == 4 && (switchName.Equals("CISCO01"))) //|| switchName.Equals("CISCO15") || switchName.Equals("CISCO32")))
                         //{
                         //    stream.Close();
                         //    client.Close();
                         //}
                         //i++;
-                        // fin test plantage com tcp
+                        //fin test plantage com tcp
                     }
                     catch (Exception ex)
                     {
@@ -103,7 +105,7 @@ namespace SovSwitch
                         //Console.WriteLine("Exception: " + ex);
                         //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + '\n' + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
                         //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")\n");
-                        LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")\n");
+                        LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + "\nERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
                     }
                 }
                 //i++;
@@ -111,8 +113,8 @@ namespace SovSwitch
                 client.Close();
 
                 // close log switch
-                LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" +
-                    " fin sauvegarde de " + switchName + "(" + switchIp + ")");
+                //LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" +
+                //    " fin sauvegarde de " + switchName + "(" + switchIp + ")");
                 //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" + 
                 //    " fin sauvegarde de " + switchName + "(" + switchIp + ")");
                 //Console.WriteLine("\t------ fin sauvegarde de " + switchName + "(" + switchIp + ")");
@@ -125,7 +127,7 @@ namespace SovSwitch
                 //Console.WriteLine("Exception: " + ex.Message);
                 //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"],ex.Message + switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch\n");
                 //Console.WriteLine(switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch");
-                LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + "\n" +  switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch\n");
+                LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + "\n" + switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch");
             }
         }
 
