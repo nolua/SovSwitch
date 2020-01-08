@@ -97,9 +97,7 @@ namespace LogLibrary
 
         public static void WriteLog(string pathFileLog, string fileLog, string msgLog)
         {
-            //Console.WriteLine();
             Console.WriteLine(msgLog);
-            //Console.WriteLine();
             LogToFile.LogAppend(pathFileLog, fileLog, msgLog);
         }
 

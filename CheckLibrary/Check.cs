@@ -12,7 +12,6 @@ namespace CheckLibrary
     {
         public static bool VerifAdresseIp(string adresse)
         {
-            //string modele1 = "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$";
             string modele1 = "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
             Regex regex1 = new Regex(modele1);
             if (regex1.IsMatch(adresse) && !adresse.Equals("0.0.0.0")) 

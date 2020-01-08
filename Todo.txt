@@ -84,3 +84,18 @@ verif ligne de commande
 		rep log absent
 		file logfinal present
 
+si arg=1
+	si arg = backup
+		oui => backup
+
+
+
+si lenght.arg=0 ou lenght.arg > 2 => on sort avec message d'erreur
+si lenght.arg=1
+	test si arg = backup
+		oui => backup
+		non => on sort avec messega d'erreur
+sinon
+	si arg(1) = encrypt
+		oui => encrypt
+		non => on sort avec message d'erreur

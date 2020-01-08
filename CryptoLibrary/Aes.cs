@@ -57,28 +57,9 @@ namespace CryptoLibrary
             }
             catch 
             {
-                //Console.WriteLine();
-                //Console.WriteLine("Exception: " + e.Message + "\n ERREUR sur un password");
-                //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogFinal"], e.Message + "\n ERREUR sur un password");
-                //Exit(conf["pathFileLog"], conf["FileLogFinal"], 1,e.Message + "\n ERREUR sur un password");
                 return "";
             }
-            //return Encoding.UTF8.GetString(plainTextBytes, 0, decryptedByteCount);
         }
-
-        //public static void Exit(string pathFileLog, string fileLog, int v, string msgLog)
-        //{
-        //    //throw new NotImplementedException();
-
-        //    switch (v)
-        //    {
-        //        case 1: //erreur password
-        //            Console.WriteLine();
-        //            Console.WriteLine(msgLog);
-        //            LogToFile.LogAppend(pathFileLog, fileLog, msgLog + (char)13);
-        //            break;
-        //    }
-        //}
     }
 }
 

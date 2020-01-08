@@ -1,7 +1,8 @@
 {
   "profiles": {
     "SovSwitch": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "/backup"
     }
   }
 }

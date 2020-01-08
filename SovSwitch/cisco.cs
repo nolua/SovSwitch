@@ -58,12 +58,6 @@ namespace SovSwitch
                 stream.WriteTimeout = 10000;
 
                 Console.WriteLine();
-                // open log switch
-                //LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" +
-                //    " debut sauvegarde de " + switchName + "(" + switchIp + ")");
-                //LogToFile.LogAppend(conf["pathFileLog"],conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" + 
-                //    " debut sauvegarde de " + switchName + "(" + switchIp + ")");
-                //Console.WriteLine("\t------ debut sauvegarde de " + switchName + "(" + switchIp + ")");
 
                 int i = 0; // pour test plantage com tcp
 
@@ -79,15 +73,13 @@ namespace SovSwitch
                             if (!element.Equals(""))
                             {
                                 LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"],$"{ new string(' ',21)+ element}");
-                                //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], "\t\t" + element);
-                                //Console.WriteLine("\t\t" + element);
                             }
                         rep = "";
                         SendData(n.sData);
 
                         //test plantage com tcp
                         // de 0 a 6 en fonction de l'etpae de connexion sur le switch
-                        //if (i == 4 && (switchName.Equals("CISCO01"))) //|| switchName.Equals("CISCO15") || switchName.Equals("CISCO32")))
+                        //if (i == 4 && (switchName.Equals("CISCO01"))) //|| switchName.Equals("CISCO4") || switchName.Equals("CISCO32")))
                         //{
                         //    stream.Close();
                         //    client.Close();
@@ -99,34 +91,18 @@ namespace SovSwitch
                     {
                         // on positionne l'etat du backup à false
                         backupState = false;
-                        //Console.WriteLine();
-                        //Console.WriteLine("Exception: " + ex.Message);
-                        //Console.WriteLine("ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
-                        //Console.WriteLine("Exception: " + ex);
-                        //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + '\n' + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
-                        //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + "ERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")\n");
                         LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + "\nERREUR sur la sauvegarde de " + switchName + "(" + switchIp + ")");
                     }
+                    i++;
                 }
-                //i++;
+                //i++; // Test plantage
                 stream.Close();
                 client.Close();
-
-                // close log switch
-                //LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" +
-                //    " fin sauvegarde de " + switchName + "(" + switchIp + ")");
-                //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"], $"{ new string(' ', 11)}{ new string('-', 10)}" + 
-                //    " fin sauvegarde de " + switchName + "(" + switchIp + ")");
-                //Console.WriteLine("\t------ fin sauvegarde de " + switchName + "(" + switchIp + ")");
             }
             catch (Exception ex)
             {
                 // on positionne l'etat du backup à false
                 backupState = false;
-                //Console.WriteLine();
-                //Console.WriteLine("Exception: " + ex.Message);
-                //LogToFile.LogAppend(conf["pathFileLog"], conf["FileLogTemp"],ex.Message + switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch\n");
-                //Console.WriteLine(switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch");
                 LogToFile.WriteLog(conf["pathFileLog"], conf["FileLogTemp"], ex.Message + "\n" + switchName + "(" + switchIp + ")" + " : ne semble pas etre un switch");
             }
         }
@@ -143,21 +119,12 @@ namespace SovSwitch
             Byte[] bytesReceived = new Byte[512];
             int nbBytes;
 
-            //try
-            //{
                 while (!(FindString(page, findRxChaine)))
                 {
                     nbBytes = stream.Read(bytesReceived, 0, bytesReceived.Length);
                     page = System.Text.Encoding.ASCII.GetString(bytesReceived, 0, nbBytes);
                     comp++;
-                    // pour debug
-                    //Console.WriteLine("nbBtytes {0}   page={1}",nbBytes,page);
                 }
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine("erreur {0}   page={1}", ex, page);
-            //}
         }
 
         public bool FindString(string searchWithinThis, string searchForThis)
